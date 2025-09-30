@@ -1,0 +1,174 @@
+{
+  "market_impact": {
+    "stock_market": [
+      {
+        "rank": 1,
+        "indicator": "고용현황보고서"
+      },
+      {
+        "rank": 2,
+        "indicator": "ISM 제조업보고서"
+      },
+      {
+        "rank": 3,
+        "indicator": "주간 실업수당신청건수"
+      },
+      {
+        "rank": 4,
+        "indicator": "소비자물가"
+      },
+      {
+        "rank": 5,
+        "indicator": "생산자물가"
+      },
+      {
+        "rank": 6,
+        "indicator": "소매판매"
+      },
+      {
+        "rank": 7,
+        "indicator": "소비자신뢰와 심리조사"
+      },
+      {
+        "rank": 8,
+        "indicator": "개인소득과 지출"
+      },
+      {
+        "rank": 9,
+        "indicator": "내구재주문"
+      },
+      {
+        "rank": 10,
+        "indicator": "GDP"
+      }
+    ],
+    "bond_market": [
+      {
+        "rank": 1,
+        "indicator": "고용현황보고서"
+      },
+      {
+        "rank": 2,
+        "indicator": "소비자물가"
+      },
+      {
+        "rank": 3,
+        "indicator": "ISM 제조업보고서"
+      },
+      {
+        "rank": 4,
+        "indicator": "생산자물가"
+      },
+      {
+        "rank": 5,
+        "indicator": "주간 실업수당신청건수"
+      },
+      {
+        "rank": 6,
+        "indicator": "소매판매"
+      },
+      {
+        "rank": 7,
+        "indicator": "주택착송"
+      },
+      {
+        "rank": 8,
+        "indicator": "개인소득과 지출"
+      },
+      {
+        "rank": 9,
+        "indicator": "ADP 전미고용보고서"
+      },
+      {
+        "rank": 10,
+        "indicator": "GDP"
+      }
+    ],
+    "currency_market": [
+      {
+        "rank": 1,
+        "indicator": "고용현황보고서"
+      },
+      {
+        "rank": 2,
+        "indicator": "국제무역"
+      },
+      {
+        "rank": 3,
+        "indicator": "GDP"
+      },
+      {
+        "rank": 4,
+        "indicator": "경상수지"
+      },
+      {
+        "rank": 5,
+        "indicator": "산업생산/설비가동률"
+      },
+      {
+        "rank": 6,
+        "indicator": "ISM 제조업보고서"
+      },
+      {
+        "rank": 7,
+        "indicator": "소매판매"
+      },
+      {
+        "rank": 8,
+        "indicator": "소비자물가"
+      },
+      {
+        "rank": 9,
+        "indicator": "소비자신뢰와 심리조사"
+      },
+      {
+        "rank": 10,
+        "indicator": "생산성과 단위비용"
+      }
+    ],
+    "leading_indicators": [
+      {
+        "rank": 1,
+        "indicator": "수익률곡선"
+      },
+      {
+        "rank": 2,
+        "indicator": "내구재를 위한 신규주문"
+      },
+      {
+        "rank": 3,
+        "indicator": "ISM 제조업보고서 - 신규주문"
+      },
+      {
+        "rank": 4,
+        "indicator": "생산자물가(식량과 에너지를 제외한 원자재)"
+      },
+      {
+        "rank": 5,
+        "indicator": "개인소득과 지출(내구재 구매)"
+      },
+      {
+        "rank": 6,
+        "indicator": "주택허가(단독주택)"
+      },
+      {
+        "rank": 7,
+        "indicator": "주간 모기지신청(주택구입용)"
+      },
+      {
+        "rank": 8,
+        "indicator": "주택시장지수"
+      },
+      {
+        "rank": 9,
+        "indicator": "주간 실업수당신청"
+      },
+      {
+        "rank": 10,
+        "indicator": "고용현황보고서 - 비상근직 노동자와 트럭 운전사 고용"
+      }
+    ]
+  },
+  "last_updated": "2025-09-12",
+  "data_source": "US Economic Indicators Excel File"
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미국 경제지표 자산시장 영향 분석 대시보드</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- News Ticker -->
+        <div class="news-ticker">
+            <div class="news-ticker-header">
+                <div class="news-ticker-label">실시간 뉴스</div>
+                <button id="refreshNewsBtn" class="btn btn-sm btn-outline" title="뉴스 새로고침">
+                    🔄
+                </button>
+            </div>
+            <div class="news-ticker-content">
+                <div class="news-ticker-scroll" id="newsTickerScroll">
+                    <!-- News items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>미국 경제지표 자산시장 영향 분석 대시보드</h1>
+            <div class="header-controls">
+                <div class="last-updated">
+                    마지막 업데이트: <span id="lastUpdated"></span>
+                </div>
+                <button id="manualUpdateBtn" class="btn btn-sm btn-outline" title="실시간 데이터 수동 업데이트">
+                    🔄 실시간 업데이트
+                </button>
+                <button id="debugBtn" class="btn btn-sm btn-outline" title="데이터 상태 확인">
+                    🔍 상태 확인
+                </button>
+            </div>
+        </header>
+
+        <!-- Search and Controls -->
+        <div class="controls-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="경제지표 검색..." class="search-input">
+                <button id="searchBtn" class="btn btn--primary">검색</button>
+            </div>
+            <button id="favoritesToggle" class="btn btn--secondary">
+                <span id="favoritesText">즐겨찾기 보기</span>
+            </button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="economic_indicators">경제지표</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="tab-content-container">
+            <!-- Economic Indicators Tab -->
+            <div class="tab-content active" id="economic_indicators">
+                <div class="main-content">
+                    <!-- Charts Section -->
+                    <div class="charts-section">
+                        <!-- Market Returns Heatmap -->
+                        <div class="heatmap-section">
+                            <h2>미국 시장 수익률</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://www.alphavantage.co/" target="_blank" class="source-link">Alpha Vantage (Sector ETFs)</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="heatmap-container">
+                                <div class="heatmap-controls">
+                                    <div class="period-selector">
+                                        <label for="heatmapPeriodSelect">기간 선택:</label>
+                                        <select id="heatmapPeriodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="3Y">3년</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="heatmap-grid" id="heatmapGrid">
+                                    <!-- Heatmap will be populated by JavaScript -->
+                                </div>
+                                <div class="heatmap-legend">
+                                    <div class="legend-scale">
+                                        <span class="legend-label">음수</span>
+                                        <div class="legend-gradient"></div>
+                                        <span class="legend-label">양수</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Global Bond Yields Table -->
+                        <div class="bond-yields-section">
+                            <h2>글로벌 국채 금리</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="bond-yields-container">
+                                <div class="yields-table-wrapper">
+                                    <table class="yields-table" id="yieldsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>국가명</th>
+                                                <th>1년</th>
+                                                <th>2년</th>
+                                                <th>5년</th>
+                                                <th>10년</th>
+                                                <th>30년</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="yieldsTableBody">
+                                            <!-- Data will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Treasury Yields Chart -->
+                        <div class="treasury-section">
+                            <h2>미국 국채 수익률</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="treasury-chart-container">
+                                <div class="chart-controls">
+                                    <div class="period-selector">
+                                        <label for="periodSelect">기간 선택:</label>
+                                        <select id="periodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="10Y">10년</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="treasuryChart" width="400" height="300"></canvas>
+                                </div>
+                                <div class="treasury-legend">
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #ff6b6b;"></span>
+                                        <span>3개월</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #4ecdc4;"></span>
+                                        <span>2년</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #45b7d1;"></span>
+                                        <span>10년</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <span class="legend-color" style="background-color: #96ceb4;"></span>
+                                        <span>30년</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Section -->
+                    <div class="bottom-section">
+                        <!-- Dollar Index Chart -->
+                        <div class="dollar-index-section">
+                            <h2>달러인덱스</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="dollar-index-container">
+                                <div class="chart-controls">
+                                    <div class="period-selector">
+                                        <label for="dollarIndexPeriodSelect">기간 선택:</label>
+                                        <select id="dollarIndexPeriodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="3Y">3년</option>
+                                        </select>
+                                    </div>
+                                    <div class="current-value-input">
+                                        <label for="dxyCurrentValue">현재값 (DXY):</label>
+                                        <input type="number" id="dxyCurrentValue" step="0.01" value="97.63" class="form-control">
+                                        <button id="updateDxyBtn" class="btn btn-primary btn-sm">업데이트</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="dollarIndexChart" width="400" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Currency Exchange Rates Table -->
+                        <div class="currency-rates-section">
+                            <h2>주요 통화간 환율</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://www.investing.com/currencies" target="_blank" class="source-link">investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="currency-rates-container">
+                                <div class="rates-table-wrapper">
+                                    <table class="rates-table" id="ratesTable">
+                                        <thead>
+                                            <tr>
+                                                <th>통화쌍</th>
+                                                <th>현재가</th>
+                                                <th>변동</th>
+                                                <th>변동률</th>
+                                                <th>입력</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ratesTableBody">
+                                            <!-- Data will be populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- High Yield Bond Spread Chart -->
+                        <div class="high-yield-section">
+                            <h2>하이일드 채권 스프레드</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="high-yield-container">
+                                <div class="chart-controls">
+                                    <div class="period-selector">
+                                        <label for="highYieldPeriodSelect">기간 선택:</label>
+                                        <select id="highYieldPeriodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="3Y">3년</option>
+                                        </select>
+                                    </div>
+                                    <div class="current-value-input">
+                                        <label for="hySpreadCurrentValue">현재값 (bps):</label>
+                                        <input type="number" id="hySpreadCurrentValue" step="1" value="278" class="form-control">
+                                        <button id="updateHySpreadBtn" class="btn btn-primary btn-sm">업데이트</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="highYieldChart" width="400" height="300"></canvas>
+                                </div>
+                                <div class="spread-info">
+                                    <p class="spread-description">ICE BofA US High Yield Index Option-Adjusted Spread</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Fed Rate Monitor and Commodity Charts Section -->
+                    <div class="fed-commodity-section">
+                        <!-- FED Rate Monitor -->
+                        <div class="fed-rate-monitor-section">
+                            <h2>FED 금리 모니터링</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="fed-rate-container">
+                                <div class="current-rate-display">
+                                    <div class="rate-card">
+                                        <div class="rate-label">현재 FED 금리</div>
+                                        <div class="rate-value" id="currentFedRate">5.50%</div>
+                                        <div class="rate-date" id="fedRateDate"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="rate-monitoring-tools">
+                                    <div class="monitoring-section">
+                                        <h3>금리 변화 모니터링</h3>
+                                        <div class="rate-input-section">
+                                            <label for="newFedRate">새로운 FED 금리 (%):</label>
+                                            <input type="number" id="newFedRate" step="0.01" value="5.50" class="form-control">
+                                            <button id="updateFedRateBtn" class="btn btn-primary">업데이트</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="rate-history-section">
+                                        <h3>최근 금리 변화</h3>
+                                        <div class="rate-history-list" id="fedRateHistory">
+                                            <!-- History will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="market-impact-section">
+                                        <h3>시장 영향 분석</h3>
+                                        <div class="impact-grid">
+                                            <div class="impact-item">
+                                                <span class="impact-label">달러인덱스</span>
+                                                <span class="impact-value" id="dxyImpact">중립</span>
+                                            </div>
+                                            <div class="impact-item">
+                                                <span class="impact-label">통화시장</span>
+                                                <span class="impact-value" id="currencyImpact">중립</span>
+                                            </div>
+                                            <div class="impact-item">
+                                                <span class="impact-label">채권 스프레드</span>
+                                                <span class="impact-value" id="spreadImpact">중립</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="fomc-schedule-section">
+                                    <h3>다음 FOMC 회의 일정</h3>
+                                    <div class="fomc-schedule">
+                                        <div class="fomc-meeting">
+                                            <div class="meeting-date" id="nextFomcDate1"></div>
+                                            <div class="meeting-type">FOMC 정기회의</div>
+                                            <div class="meeting-expectation">
+                                                <span class="expectation-label">예상 금리:</span>
+                                                <span class="expectation-value">5.50% (유지)</span>
+                                            </div>
+                                        </div>
+                                        <div class="fomc-meeting">
+                                            <div class="meeting-date" id="nextFomcDate2"></div>
+                                            <div class="meeting-type">FOMC 정기회의</div>
+                                            <div class="meeting-expectation">
+                                                <span class="expectation-label">예상 금리:</span>
+                                                <span class="expectation-value">5.25% (인하)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BDI (Baltic Dry Index) Chart -->
+                        <div class="bdi-chart-section">
+                            <h2>BDI (Baltic Dry Index)</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="bdi-chart-container">
+                                <div class="chart-controls">
+                                    <div class="period-selector">
+                                        <label for="bdiPeriodSelect">기간 선택:</label>
+                                        <select id="bdiPeriodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="3Y">3년</option>
+                                        </select>
+                                    </div>
+                                    <div class="current-value-input">
+                                        <label for="bdiCurrentValue">현재값 (BDI):</label>
+                                        <input type="number" id="bdiCurrentValue" step="1" value="1250" class="form-control">
+                                        <button id="updateBdiBtn" class="btn btn-primary btn-sm">업데이트</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="bdiChart" width="400" height="300"></canvas>
+                                </div>
+                                <div class="bdi-info">
+                                    <p class="bdi-description">Baltic Dry Index - 해상 운송 시장의 주요 지표로, 벌크 화물 운송 비용의 변동을 반영</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WTI Crude Oil Spot Chart -->
+                        <div class="wti-chart-section">
+                            <h2>WTI 원유 현물</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="wti-chart-container">
+                                <div class="chart-controls">
+                                    <div class="period-selector">
+                                        <label for="wtiPeriodSelect">기간 선택:</label>
+                                        <select id="wtiPeriodSelect" class="form-control">
+                                            <option value="3M">3개월</option>
+                                            <option value="6M">6개월</option>
+                                            <option value="1Y" selected>1년</option>
+                                            <option value="3Y">3년</option>
+                                        </select>
+                                    </div>
+                                    <div class="current-value-input">
+                                        <label for="wtiCurrentValue">현재가 ($/배럴):</label>
+                                        <input type="number" id="wtiCurrentValue" step="0.01" value="76.20" class="form-control">
+                                        <button id="updateWtiBtn" class="btn btn-primary btn-sm">업데이트</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="wtiChart" width="400" height="300"></canvas>
+                                </div>
+                                <div class="wti-info">
+                                    <p class="wti-description">WTI Crude Oil Spot - 미국 서부 텍사스 중질유 현물 가격으로 즉시 인도되는 원유의 실제 거래 가격</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fear and Greed Index Section -->
+                    <div class="fear-greed-index-section">
+                        <!-- Market Fear and Greed Index -->
+                        <div class="market-fear-greed-section">
+                            <h2>Fear and Greed Index</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="source-link">CNN Business</a>
+                            </div>
+                            <div class="fear-greed-container">
+                                <div class="current-index-display">
+                                    <div class="index-card">
+                                        <div class="index-label">현재 시장 심리</div>
+                                        <div class="index-value" id="currentMarketIndex">58</div>
+                                        <div class="index-classification" id="marketClassification">Neutral</div>
+                                        <div class="index-date" id="marketIndexDate"></div>
+                                    </div>
+                                </div>
+                                
+                        <div class="index-monitoring-tools">
+                            <div class="data-note">
+                                <p><strong>실시간 데이터:</strong> 이 지수는 <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">CNN Business</a>에서 제공하는 실제 시장 데이터를 표시합니다. 10분마다 자동 업데이트됩니다.</p>
+                            </div>
+                            <div class="index-input-section">
+                                <label for="newMarketIndex">새로운 시장 지수 (0-100):</label>
+                                <input type="number" id="newMarketIndex" min="0" max="100" step="1" value="58" class="form-control">
+                                <button id="updateMarketIndexBtn" class="btn btn-primary">업데이트</button>
+                            </div>
+                                    
+                                    <div class="index-scale">
+                                        <div class="scale-item extreme-fear">
+                                            <span class="scale-label">극도 공포</span>
+                                            <span class="scale-range">0-25</span>
+                                        </div>
+                                        <div class="scale-item fear">
+                                            <span class="scale-label">공포</span>
+                                            <span class="scale-range">26-45</span>
+                                        </div>
+                                        <div class="scale-item neutral">
+                                            <span class="scale-label">중립</span>
+                                            <span class="scale-range">46-55</span>
+                                        </div>
+                                        <div class="scale-item greed">
+                                            <span class="scale-label">탐욕</span>
+                                            <span class="scale-range">56-75</span>
+                                        </div>
+                                        <div class="scale-item extreme-greed">
+                                            <span class="scale-label">극도 탐욕</span>
+                                            <span class="scale-range">76-100</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Crypto Fear and Greed Index -->
+                        <div class="crypto-fear-greed-section">
+                            <h2>Crypto Fear and Greed Index</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" class="source-link">Alternative.me</a>
+                            </div>
+                            <div class="fear-greed-container">
+                                <div class="current-index-display">
+                                    <div class="index-card crypto">
+                                        <div class="index-label">현재 암호화폐 심리</div>
+                                        <div class="index-value" id="currentCryptoIndex">52</div>
+                                        <div class="index-classification" id="cryptoClassification">Neutral</div>
+                                        <div class="index-date" id="cryptoIndexDate"></div>
+                                    </div>
+                                </div>
+                                
+                        <div class="index-monitoring-tools">
+                            <div class="data-note">
+                                <p><strong>실시간 데이터:</strong> 이 지수는 <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank">Alternative.me</a>에서 제공하는 실제 암호화폐 시장 데이터를 표시합니다. 10분마다 자동 업데이트됩니다.</p>
+                            </div>
+                            <div class="index-input-section">
+                                <label for="newCryptoIndex">새로운 암호화폐 지수 (0-100):</label>
+                                <input type="number" id="newCryptoIndex" min="0" max="100" step="1" value="52" class="form-control">
+                                <button id="updateCryptoIndexBtn" class="btn btn-primary">업데이트</button>
+                            </div>
+                                    
+                                    <div class="crypto-analysis">
+                                        <h4>데이터 소스</h4>
+                                        <div class="analysis-grid">
+                                            <div class="analysis-item">
+                                                <span class="analysis-label">변동성</span>
+                                                <span class="analysis-weight">25%</span>
+                                            </div>
+                                            <div class="analysis-item">
+                                                <span class="analysis-label">시장 모멘텀</span>
+                                                <span class="analysis-weight">25%</span>
+                                            </div>
+                                            <div class="analysis-item">
+                                                <span class="analysis-label">소셜 미디어</span>
+                                                <span class="analysis-weight">15%</span>
+                                            </div>
+                                            <div class="analysis-item">
+                                                <span class="analysis-label">지배력</span>
+                                                <span class="analysis-weight">10%</span>
+                                            </div>
+                                            <div class="analysis-item">
+                                                <span class="analysis-label">트렌드</span>
+                                                <span class="analysis-weight">10%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Economic Indicators Section -->
+                    <div class="indicators-section">
+                        <h2>경제지표 (중요도별 정렬)</h2>
+                        <div class="data-source">
+                            <span class="source-label">출처: </span>
+                            <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                            <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                        </div>
+                        
+                        <!-- Loading Indicator -->
+                        <div class="loading-indicator hidden" id="loadingIndicator">
+                            <div class="loading-spinner"></div>
+                            <p>경제 데이터를 불러오는 중...</p>
+                        </div>
+                        
+                        <!-- Error Message -->
+                        <div class="error-message hidden" id="errorMessage">
+                            <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
+                            <button class="btn btn--primary" onclick="retryDataLoad()">다시 시도</button>
+                        </div>
+                        
+                        <!-- Unified Indicators Grid -->
+                        <div class="indicators-grid" id="unifiedIndicatorsGrid">
+                            <!-- Cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Search Results Overlay -->
+        <div class="search-overlay hidden" id="searchOverlay">
+            <div class="search-results">
+                <div class="search-header">
+                    <h3>검색 결과</h3>
+                    <button id="closeSearchBtn" class="btn btn--outline">닫기</button>
+                </div>
+                <div class="search-results-content" id="searchResultsContent">
+                    <!-- Search results will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Modal -->
+        <div class="modal hidden" id="favoritesModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>즐겨찾기한 경제지표</h3>
+                    <button id="closeFavoritesBtn" class="btn btn--outline">닫기</button>
+                </div>
+                <div class="modal-body" id="favoritesContent">
+                    <p>즐겨찾기한 지표가 없습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="real-time-data-proxy.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

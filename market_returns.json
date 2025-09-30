@@ -1,0 +1,84 @@
+{
+  "timestamp": "2025-09-26 18:19:28",
+  "period": "1Y",
+  "source": "Alpha Vantage API",
+  "sectors": {
+    "technology": {
+      "name": "기술",
+      "symbol": "XLK",
+      "return_percent": -22.5,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:16"
+    },
+    "healthcare": {
+      "name": "헬스케어",
+      "symbol": "XLV",
+      "return_percent": 2.99,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:17"
+    },
+    "financial": {
+      "name": "금융",
+      "symbol": "XLF",
+      "return_percent": -7.54,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:18"
+    },
+    "consumerDiscretionary": {
+      "name": "소비재(선택)",
+      "symbol": "XLY",
+      "return_percent": -15.63,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:19"
+    },
+    "consumerStaples": {
+      "name": "소비재(필수)",
+      "symbol": "XLP",
+      "return_percent": 4.78,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:21"
+    },
+    "utilities": {
+      "name": "유틸리티",
+      "symbol": "XLU",
+      "return_percent": -6.87,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:22"
+    },
+    "energy": {
+      "name": "에너지",
+      "symbol": "XLE",
+      "return_percent": -11.68,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:23"
+    },
+    "industrials": {
+      "name": "산업",
+      "symbol": "XLI",
+      "return_percent": -10.96,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:24"
+    },
+    "realEstate": {
+      "name": "부동산",
+      "symbol": "XLRE",
+      "return_percent": 0.99,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:26"
+    },
+    "materials": {
+      "name": "소재",
+      "symbol": "XLB",
+      "return_percent": -4.01,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:27"
+    },
+    "communication": {
+      "name": "통신",
+      "symbol": "XLC",
+      "return_percent": -16.56,
+      "source": "Alpha Vantage API",
+      "timestamp": "2025-09-26 18:19:28"
+    }
+  }
+}

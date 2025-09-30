@@ -1,0 +1,1083 @@
+{
+  "impact_analysis": {
+    "stock_market": [],
+    "bond_market": [
+      {
+        "rank": "1",
+        "indicator": "고용현황보고서"
+      },
+      {
+        "rank": "2",
+        "indicator": "소비자물가"
+      },
+      {
+        "rank": "3",
+        "indicator": "ISM 제조업보고서"
+      },
+      {
+        "rank": "4",
+        "indicator": "생산자물가"
+      },
+      {
+        "rank": "5",
+        "indicator": "주간 실업수당신청건수"
+      },
+      {
+        "rank": "6",
+        "indicator": "소매판매"
+      },
+      {
+        "rank": "7",
+        "indicator": "주택착송"
+      },
+      {
+        "rank": "8",
+        "indicator": "개인소득과 지출"
+      },
+      {
+        "rank": "9",
+        "indicator": "ADP 전미고용보고서"
+      },
+      {
+        "rank": "10",
+        "indicator": "GDP"
+      }
+    ],
+    "currency_market": [
+      {
+        "rank": "1",
+        "indicator": "고용현황보고서"
+      },
+      {
+        "rank": "2",
+        "indicator": "국제무역"
+      },
+      {
+        "rank": "3",
+        "indicator": "GDP"
+      },
+      {
+        "rank": "4",
+        "indicator": "경상수지"
+      },
+      {
+        "rank": "5",
+        "indicator": "산업생산/설비가동률"
+      },
+      {
+        "rank": "6",
+        "indicator": "ISM 제조업보고서"
+      },
+      {
+        "rank": "7",
+        "indicator": "소매판매"
+      },
+      {
+        "rank": "8",
+        "indicator": "소비자물가"
+      },
+      {
+        "rank": "9",
+        "indicator": "소비자신뢰와 심리조사"
+      },
+      {
+        "rank": "10",
+        "indicator": "생산성과 단위비용"
+      },
+      {
+        "rank": "1",
+        "indicator": "수익률곡선"
+      },
+      {
+        "rank": "2",
+        "indicator": "내구재를 위한 신규주문"
+      },
+      {
+        "rank": "3",
+        "indicator": "ISM 제조업보고서 - 신규주문"
+      },
+      {
+        "rank": "4",
+        "indicator": "생산자물가(식량과 에너지를 제외한 원자재)"
+      },
+      {
+        "rank": "5",
+        "indicator": "개인소득과 지출(내구재 구매)"
+      },
+      {
+        "rank": "6",
+        "indicator": "주택허가(단독주택)"
+      },
+      {
+        "rank": "7",
+        "indicator": "주간 모기지신청(주택구입용)"
+      },
+      {
+        "rank": "8",
+        "indicator": "주택시장지수"
+      },
+      {
+        "rank": "9",
+        "indicator": "주간 실업수당신청"
+      },
+      {
+        "rank": "10",
+        "indicator": "고용현황보고서 - 비상근직 노동자와 트럭 운전사 고용"
+      }
+    ]
+  },
+  "economic_indicators": [
+    {
+      "category": null,
+      "name": "미시간대소비자심리지수 university of michigan surveys of consumer sentiment index",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "소매판매 retail sales",
+      "importance": "중간",
+      "website": "https://www.census.gov/retail/sales.html",
+      "schedule": "확정치: 매월 말 발표",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "마트,백화점,소매점(서비스업x)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "컨퍼런스보드소비자신뢰지수 the conference board consumer confidence index",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "개인소비지출 PCE(personal consumption expenditures)",
+      "importance": "중간",
+      "website": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
+      "schedule": "매월 마지막주 화요일 오전 10시(동부시간)",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "매월 말",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "뉴욕연은소비자기대지수 new york survey of consumer expectations",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "주간 체인스토어 판매액 스냅숏",
+      "importance": "중간",
+      "website": "http://reports.wxtrends.com/reports/icsweekly.pdf",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "매주 화요일 오전 7시 45분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "존슨레드북소매판매 johnson redbook retail sales",
+      "importance": "중간",
+      "website": "https://tradingeconomics.com/united-states/redbook-index",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": null,
+      "name": "매주",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "소득",
+      "name": "애틀란타연은임금상승트래커 atlanta fed wage growth traker",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "소득",
+      "name": "개인소득 personal income",
+      "importance": "",
+      "website": "https://tradingeconomics.com/united-states/personal-income",
+      "schedule": "매월 2번째 금요일 발표",
+      "description": ""
+    },
+    {
+      "category": "소득",
+      "name": "매월 말",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "소득",
+      "name": "개인소득과 지출 disposable income(DPI) and personal consumption expenditure(PCE)",
+      "importance": "높음",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "챌린저,그레이&크리스마스 challenger, gray & christmas",
+      "importance": "매우 높음",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "주간실업수당청구건수 weekly unemployment insurance",
+      "importance": "매우 높음",
+      "website": "https://ko.tradingeconomics.com/united-states/jobless-claims",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "매주 목요일 오전 8시 30분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "캔자스시티연은고용시장컨디션지수 kansas city labor market conditions",
+      "importance": "높음",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "ADP민간고용 ADP national employment report",
+      "importance": "높음",
+      "website": "https://adpemploymentreport.com/",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "매월 1번째 수요일? 오전 8시 15분(동부시간)(BLS보다 2일 먼저)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "BLS고용보고서 employment situation",
+      "importance": "매우 높음",
+      "website": "https://www.bls.gov/",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "매월 1번째 금요일",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "JOLTs보고서(구인이직보고서)",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/jolts-job-openings-1057",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "고용",
+      "name": "매월 종료후",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "NAHB주택시장지수 national association of home builders housing market index",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "신규주택판매 new housing sales",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "www.nahb.org/hmi",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "www.census.gov/newhomesales",
+      "importance": "",
+      "website": "https://tradingeconomics.com/united-states/new-home-sales",
+      "schedule": "매월 중순 오전 1시(동부시간)",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월 종료일부터 4주후 오전 10시(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "모기지신청지수 mortgage applications, market composite",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "기존주택판매 existing-home sales",
+      "importance": "중간",
+      "website": "https://www.mba.org/news-and-research",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "www.realtor.org/topics/existing-home-sales/data",
+      "importance": "",
+      "website": "https://tradingeconomics.com/united-states/existing-home-sales",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매주 수요일 오전 7기(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "매주 수요일 오전 7기(동부시간)",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "주택구입부담지수 housing affordability index",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/FIXHAI",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "미결주택판매지수 pending home sales",
+      "importance": "",
+      "website": "https://tradingeconomics.com/united-states/pending-home-sales",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월 말",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "주택착공및허가건수 housing starts/housing permits authorized",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "www.census.gov/construction/nrc",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/PERMIT",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월 종료일부터 2~3주후 오전 8시 30분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "S&P/CS주택가격지수 S&P case-shiller national home price index",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/CSUSHPINSA",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "FHFA주택가격지수 federal housing finance agency house price",
+      "importance": "",
+      "website": "https://tradingeconomics.com/united-states/housing-index",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "부동산",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "ISM제조업PMI지수",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "산업생산 industrial production",
+      "importance": "중간",
+      "website": "https://fred.stlouisfed.org/series/INDPRO",
+      "schedule": "매월 1번째 영업일",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 15일경 오전 9시 15분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "ISM비제조업PMI지수",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "설비가동률 capacity utilization",
+      "importance": "중간",
+      "website": "https://fred.stlouisfed.org/series/TCU",
+      "schedule": "매월 3번째 영업일",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 15일경 오전 9시 15분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "S&P글로벌제조업PMI지수",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "기업재고 total business inventories",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/business-inventories-29",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "www.census.gov/mtis/www/mtis.html",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "S&P글로벌비제조업PMI지수",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 종료일 6주 경과 후 오전 10시(동부시간)",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/ism-non-manufacturing-pmi-176",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "내구재신규주문 all manufacturing industries new orders",
+      "importance": "높음",
+      "website": "https://kr.investing.com/economic-calendar/durable-goods-orders-86",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "컨퍼런스보드CEO신뢰지수 conference board measure of CEO confidence",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "www.census.gov/manufacturing/m3/adv/pdf/durgd.pdf",
+      "importance": "",
+      "website": "https://www.conference-board.org/topics/CEO-Confidence",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 종료일 3~4주 경과 후 오전 8시 30분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "분기별",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "공장주문 manufactures, shipments, inventories, orders",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "NFIB불확실성지수 national federation of independent business uncertainty index",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "www.census.gov/manufacturing/m3/prel/pdf/s-i-o.pdf",
+      "importance": "",
+      "website": "https://ycharts.com/indicators/small_business_uncertainty_index",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 종료일 4~5주 경과 후 오전 10시(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "매월 마지막",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "시카고 구매관리지표",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "www.ism-chicago.org",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기업활동",
+      "name": "매월 마지막 영업일 오전 9시 45분(동부시간)",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "연방공개시장위원회 보고서",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "GDP gross domestic product",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "importance": "",
+      "website": "https://www.bea.gov/data/gdp/gross-domestic-product",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "FOMC 회의 끝나고",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/GDP",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "연방준비제도이사회 경기동향보고서(베이지북)",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "분기별 1월, 4월, 7월, 10월 마지막 주 오전 8시 30분(동부시간)",
+      "importance": "중간",
+      "website": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "기업파산 건수 US bankrupcy filings business",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "FOMC 전 두번째 수요일 오후 2시(동부시간) 연 8회",
+      "importance": "",
+      "website": "https://www.uscourts.gov/statistics-reports/analysis-reports/bankruptcy-filings-statistics/bankruptcy-statistics-data",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "컨퍼런스보드경기선행지수 CLI",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "분기별",
+      "importance": "",
+      "website": "https://www.conference-board.org/topics/us-leading-indicators",
+      "schedule": "매월 종료후 3번째주 오전 10시",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "OECD미국경기선행 지수",
+      "importance": "",
+      "website": "https://data.oecd.org/leadind/composite-leading-indicator-cli.htm",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "애틀란타연은GDPNow ATL GDPNow forecast",
+      "importance": "",
+      "website": "https://www.atlantafed.org/cqer/research/gdpnow",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "분기별",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "NBER경기침체기간 national bureau of recession business cycle",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/USREC",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "뉴욕연은경기침체확률 NY recession probability",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/RECPROUSM156N",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "real-time sahm rule recession indicator",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/SAHMCURRENT",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "뉴욕연은주간경제지수 NY weekly economic index",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/WEI",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "매주",
+      "importance": "",
+      "website": "",
+      "schedule": "매주",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "시카고연은국가활동지수 chicago federal CFMMI national activity index",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/CFNAI",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "뉴욕연은 뉴욕주제조업지수",
+      "importance": "중간",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "www.newyorkfed.org/survey/empire/empiresurvey_overview.html",
+      "importance": "",
+      "website": "",
+      "schedule": "매월 15일경 오전 8시 30분(동부시간)",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "필라델피아 연방은행 기업경기전망 보고서",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "경기",
+      "name": "www.phil.frb.org/econ/bos/index.html",
+      "importance": "",
+      "website": "",
+      "schedule": "매월 3번째 목요일 오전 10시(동부시간)",
+      "description": ""
+    },
+    {
+      "category": "정부",
+      "name": "CBO재정전망 CBO budget projection",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "정부",
+      "name": "연방재정수지 federal government budget balance",
+      "importance": "",
+      "website": "https://www.investing.com/economic-calendar/federal-budget-balance-369",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "정부",
+      "name": "매월 중순",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "정부",
+      "name": "BIS 부채비율 bis debt to GDP ratio",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/GFDEGDQ188S",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "정부",
+      "name": "분기별",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "미국휘발유가격 NY harbor conventional gasoline regular spot price FOB",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "소비자 물가지수 CPI consumer price index",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/cpi-69",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매일",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/cpi-733",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "달러지수 us dollar index DXY",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매월",
+      "importance": "",
+      "website": "https://www.investing.com/indices/usdollar",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "개인 소비 지출 물가 PCE personal consumption expenditure price",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매일",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/pce-price-index-904",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "생산자 물가지수 PPI producer prices index",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/ppi-734",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "수출입 물가지수 export and import prices index",
+      "importance": "",
+      "website": "https://kr.investing.com/economic-calendar/export-price-index-892",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "M0: 본원통화 / 민간 보유 현금 실물",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/BOGMBASE",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "M1: 협의통화 / M0 + 수표, CMA 등 언제라도 현금화할 수 있는 예금",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/WM1NS",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "M2: 광의통화 / M1 + 정기 단기 예금, MMF 등",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/WM2NS",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "M3: M2 + 대형 정기 예금, 기관 펀드, 단기 환매 가능 자산 등",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/M3",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "미연준 기준금리 federal funds target rate",
+      "importance": "",
+      "website": "https://fred.stlouisfed.org/series/DFF",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "물가",
+      "name": "1년 8번",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기타",
+      "name": "시티매크로서프라이즈지수 citi economic surprise index",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기타",
+      "name": "경제불확실성지수 economic policy uncertainty index",
+      "importance": "",
+      "website": "http://www.policyuncertainty.com/",
+      "schedule": "매월",
+      "description": ""
+    },
+    {
+      "category": "기타",
+      "name": "매월",
+      "importance": "",
+      "website": "",
+      "schedule": "",
+      "description": ""
+    },
+    {
+      "category": "기타",
+      "name": "시티인플레이션서프라이즈 지수 citi inflation surprise index",
+      "importance": "",
+      "website": "https://toggle.ai/ko/investing/economic-indicators_ko/citi-inflation-surprises_ko",
+      "schedule": "매월",
+      "description": ""
+    }
+  ]
+}

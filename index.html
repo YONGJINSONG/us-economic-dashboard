@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), gyroscope=(), magnetometer=(), camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=(), speaker=(), vibrate=(), fullscreen=(), sync-xhr=(), autoplay=(), encrypted-media=(), picture-in-picture=()">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://s3.tradingview.com https://cdn.jsdelivr.net https://corsproxy.io https://api.allorigins.win https://cors-anywhere.herokuapp.com https://thingproxy.freeboard.io https://api.codetabs.com https://cors.bridged.cc https://proxy.cors.sh https://cors.eu.org https://yacdn.org https://widgetembed.tradingview.com https://tradingview.com; connect-src 'self' http://127.0.0.1:5000 http://127.0.0.1:5001 https://api.stlouisfed.org https://corsproxy.io https://api.allorigins.win https://cors-anywhere.herokuapp.com https://thingproxy.freeboard.io https://s3.tradingview.com https://www.investing.com https://api.codetabs.com https://cors.bridged.cc https://proxy.cors.sh https://cors.eu.org https://yacdn.org https://api.exchangerate-api.com https://feeds.finance.yahoo.com https://kr.widgets.investing.com https://sslecal2.investing.com https://tradingeconomics.com https://fred.stlouisfed.org https://edition.cnn.com https://alternative.me https://kr.investing.com https://cdn.jsdelivr.net https://api.fxratesapi.com https://www.alphavantage.co https://api.polygon.io https://widgetembed.tradingview.com https://streaming.forexpros.com https://tradingview.com https://*.tradingview.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:; frame-src 'self' https://kr.widgets.investing.com https://sslecal2.investing.com https://tradingeconomics.com https://fred.stlouisfed.org https://www.tradingview.com https://s3.tradingview.com https://widgetembed.tradingview.com https://tradingview.com https://*.tradingview.com;">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>미국 경제지표 자산시장 영향 분석 대시보드</title>
+    <link rel="stylesheet" href="style.css?v=20250126">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- News Ticker -->
+        <div class="news-ticker">
+            <div class="news-ticker-header">
+                <div class="news-ticker-label">실시간 뉴스</div>
+                <button id="refreshNewsBtn" class="btn btn-sm btn-outline" title="뉴스 새로고침">
+                    🔄
+                </button>
+            </div>
+            <div class="news-ticker-content">
+                <div class="news-ticker-scroll" id="newsTickerScroll">
+                    <!-- News items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1>미국 경제지표 자산시장 영향 분석 대시보드</h1>
+            <div class="header-controls">
+                <div class="last-updated">
+                    마지막 업데이트: <span id="lastUpdated"></span>
+                </div>
+                <button id="manualUpdateBtn" class="btn btn-sm btn-outline" title="실시간 데이터 수동 업데이트">
+                    🔄 실시간 업데이트
+                </button>
+                <button id="debugBtn" class="btn btn-sm btn-outline" title="데이터 상태 확인">
+                    🔍 상태 확인
+                </button>
+            </div>
+        </header>
+
+        <!-- Search and Controls -->
+        <div class="controls-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="경제지표 검색..." class="search-input">
+                <button id="searchBtn" class="btn btn--primary">검색</button>
+            </div>
+            <button id="favoritesToggle" class="btn btn--secondary">
+                <span id="favoritesText">즐겨찾기 보기</span>
+            </button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="economic_indicators">경제지표</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="tab-content-container">
+            <!-- Economic Indicators Tab -->
+            <div class="tab-content active" id="economic_indicators">
+                <div class="main-content">
+                    <!-- Charts Section -->
+                    <div class="charts-section">
+                        <!-- RRG and Heatmap Container -->
+                        <div class="rrg-heatmap-container">
+                            <!-- Relative Rotation Graph (RRG) Section -->
+                            <div class="rrg-section" id="rrg-section">
+                                <h2>Relative Rotation Graph (RRG) - S&P 500 Sectors</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://finance.yahoo.com/" target="_blank" class="source-link">Yahoo Finance (yfinance)</a>
+                                    <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                                </div>
+                            <div class="rrg-container">
+                                <div class="rrg-controls">
+                                    <!-- 기간 선택 드롭다운 제거됨 - 고정 3개월 기간 사용 -->
+                                    <button id="updateRRGBtn" class="btn btn-sm btn-outline" title="RRG 데이터 업데이트">
+                                        🔄 RRG 업데이트
+                                    </button>
+                                </div>
+                                <div class="rrg-visualization">
+                                    <div class="rrg-chart-container">
+                                        <canvas id="rrgChart" width="600" height="500"></canvas>
+                                    </div>
+                                    <div class="rrg-legend">
+                                        <div class="quadrant-legend">
+                                            <div class="quadrant-item leading">
+                                                <div class="quadrant-color"></div>
+                                                <span class="quadrant-label">Leading (강세)</span>
+                                            </div>
+                                            <div class="quadrant-item weakening">
+                                                <div class="quadrant-color"></div>
+                                                <span class="quadrant-label">Weakening (약화)</span>
+                                            </div>
+                                            <div class="quadrant-item improving">
+                                                <div class="quadrant-color"></div>
+                                                <span class="quadrant-label">Improving (개선)</span>
+                                            </div>
+                                            <div class="quadrant-item lagging">
+                                                <div class="quadrant-color"></div>
+                                                <span class="quadrant-label">Lagging (약세)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rrg-data-table">
+                                    <h3>Sector Analysis</h3>
+                                    <div class="table-wrapper">
+                                        <table class="rrg-table" id="rrgTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Symbol</th>
+                                                    <th>Sector</th>
+                                                    <th>Relative Strength</th>
+                                                    <th>Momentum</th>
+                                                    <th>Quadrant</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="rrgTableBody">
+                                                <!-- Data will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="rrg-explanation">
+                                    <h3>RRG (Relative Rotation Graph) 설명</h3>
+                                    <div class="explanation-content">
+                                        <p><strong>Relative Rotation Graph (RRG)</strong>는 각 섹터의 상대적 강도와 모멘텀을 시각화하여 섹터 로테이션을 분석하는 도구입니다.</p>
+                                        <div class="explanation-grid">
+                                            <div class="explanation-item">
+                                                <h4>X축: Relative Strength (상대 강도)</h4>
+                                                <p>각 섹터가 벤치마크(SPY) 대비 얼마나 강한지를 나타냅니다.</p>
+                                            </div>
+                                            <div class="explanation-item">
+                                                <h4>Y축: Relative Strength Momentum (상대 강도 모멘텀)</h4>
+                                                <p>상대 강도의 변화율을 나타내며, 모멘텀의 방향을 보여줍니다.</p>
+                                            </div>
+                                            <div class="explanation-item">
+                                                <h4>Leading (강세)</h4>
+                                                <p>상대 강도가 높고 모멘텀도 양수인 섹터들입니다.</p>
+                                            </div>
+                                            <div class="explanation-item">
+                                                <h4>Weakening (약화)</h4>
+                                                <p>상대 강도는 낮지만 모멘텀이 양수인 섹터들입니다.</p>
+                                            </div>
+                                            <div class="explanation-item">
+                                                <h4>Improving (개선)</h4>
+                                                <p>상대 강도는 낮지만 모멘텀이 음수로 개선되고 있는 섹터들입니다.</p>
+                                            </div>
+                                            <div class="explanation-item">
+                                                <h4>Lagging (약세)</h4>
+                                                <p>상대 강도가 높지만 모멘텀이 음수로 약화되고 있는 섹터들입니다.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        
+                         <!-- S&P 500 Sector Heatmap Section - TradingView Widget -->
+                         <div class="heatmap-section">
+                             <h2>S&P 500 섹터 히트맵</h2>
+                             <div class="data-source">
+                                 <span class="source-label">출처: </span>
+                                 <a href="https://www.tradingview.com/heatmap/" target="_blank" class="source-link">TradingView</a>
+                                 <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                             </div>
+                             <div class="heatmap-container">
+                                 <div class="tradingview-heatmap-preview">
+                                     <div class="heatmap-preview-content">
+                                         <h3>📊 TradingView S&P 500 섹터 히트맵</h3>
+                                         <div class="heatmap-features">
+                                             <ul>
+                                                 <li>🔴 빨간색: 하락 섹터</li>
+                                                 <li>🟡 노란색: 보합 섹터</li>
+                                                 <li>🟢 초록색: 상승 섹터</li>
+                                                 <li>📈 시가총액 기준 크기</li>
+                                                 <li>🏢 섹터별 그룹핑</li>
+                                             </ul>
+                                         </div>
+                                         <div class="heatmap-actions">
+                                             <a href="https://www.tradingview.com/heatmap/stock/#%7B%22dataSource%22%3A%22SPX500%22%2C%22blockColor%22%3A%22change%22%2C%22blockSize%22%3A%22market_cap_basic%22%2C%22grouping%22%3A%22sector%22%7D" 
+                                                target="_blank" 
+                                                class="tradingview-link-btn primary">
+                                                 🚀 TradingView 히트맵 열기
+                                             </a>
+                                             <a href="https://www.tradingview.com/heatmap/" 
+                                                target="_blank" 
+                                                class="tradingview-link-btn secondary">
+                                                 📈 전체 TradingView 히트맵
+                                             </a>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="iframe-note">
+                                     <p>💡 TradingView는 보안상의 이유로 일부 iframe 임베드를 제한할 수 있습니다. 위 버튼을 클릭하여 새 탭에서 확인하세요.</p>
+                                 </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Global Bond Yields and Treasury Yields Section -->
+                    <div class="bond-treasury-section">
+                        <div class="bond-treasury-grid">
+                            <!-- Global Bond Yields Table - Left Side -->
+                            <div class="bond-yields-section">
+                                <h2>글로벌 국채 금리</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://www.investing.com/rates-bonds/" target="_blank" class="source-link">Investing.com</a>
+                                    <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                                </div>
+                                <div class="bond-yields-container">
+                                    <div class="yields-table-wrapper">
+                                        <table class="yields-table" id="yieldsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>국가명</th>
+                                                    <th>1년</th>
+                                                    <th>2년</th>
+                                                    <th>5년</th>
+                                                    <th>10년</th>
+                                                    <th>30년</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="yieldsTableBody">
+                                                <!-- Data will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Treasury Yields Chart - Right Side -->
+                            <div class="treasury-section">
+                                <h2>미국 국채 수익률 비교 (TradingView)</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://kr.tradingview.com/" target="_blank" class="source-link">TradingView</a>
+                                    <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                                </div>
+                                <div class="treasury-description">
+                                    <p>미국 국채 수익률: 3개월물(US03MY), 2년물(US02Y), 10년물(US10Y), 30년물(US30Y)</p>
+                                    <div class="treasury-source-link">
+                                        <p><strong>출처:</strong> <a href="https://www.tradingview.com/chart/ged98b3J/?symbol=US10Y&comparisons=US03MY%2CUS02Y%2CUS30Y" target="_blank" class="source-link">TradingView 멀티 심볼 차트</a></p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Treasury Yields Single Chart -->
+                                <div class="treasury-yields-grid">
+                                    <!-- 3개월물 -->
+                                    <div class="treasury-yield-item">
+                                        <h3>3개월물 (US03MY)</h3>
+                                        <div class="tradingview-widget-container">
+                                            <div id="tradingview_us03my" style="height: 300px; width: 100%;"></div>
+                                            <div class="tradingview-widget-copyright">
+                                                <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                    <span class="blue-text">TradingView</span>
+                                                </a>에서 제공
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2년물 -->
+                                    <div class="treasury-yield-item">
+                                        <h3>2년물 (US02Y)</h3>
+                                        <div class="tradingview-widget-container">
+                                            <div id="tradingview_us02y" style="height: 300px; width: 100%;"></div>
+                                            <div class="tradingview-widget-copyright">
+                                                <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                    <span class="blue-text">TradingView</span>
+                                                </a>에서 제공
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 10년물 -->
+                                    <div class="treasury-yield-item">
+                                        <h3>10년물 (US10Y)</h3>
+                                        <div class="tradingview-widget-container">
+                                            <div id="tradingview_us10y" style="height: 300px; width: 100%;"></div>
+                                            <div class="tradingview-widget-copyright">
+                                                <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                    <span class="blue-text">TradingView</span>
+                                                </a>에서 제공
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 30년물 -->
+                                    <div class="treasury-yield-item">
+                                        <h3>30년물 (US30Y)</h3>
+                                        <div class="tradingview-widget-container">
+                                            <div id="tradingview_us30y" style="height: 300px; width: 100%;"></div>
+                                            <div class="tradingview-widget-copyright">
+                                                <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                    <span class="blue-text">TradingView</span>
+                                                </a>에서 제공
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Section -->
+                    <div class="bottom-section">
+                        <!-- Dollar Index Chart -->
+                        <div class="dollar-index-section">
+                            <h2>달러인덱스</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://www.investing.com/indices/usdollar?cid=1224074" target="_blank" class="source-link">Investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="dollar-index-container">
+                                <div class="tradingview-widget-container">
+                                    <!-- TradingView Widget BEGIN -->
+                                    <div class="tradingview-widget-container">
+                                        <div id="tradingview_dollar_index" style="height: 400px; width: 100%;"></div>
+                                        <div class="tradingview-widget-copyright">
+                                            <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                <span class="blue-text">TradingView</span>
+                                            </a>에서 제공
+                                        </div>
+                                    </div>
+                                    <!-- TradingView Widget END -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Currency Exchange Rates Widget -->
+                        <div class="currency-rates-section">
+                            <h2>주요 통화간 환율</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://www.investing.com/currencies" target="_blank" class="source-link">investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="currency-widget-container">
+                                <div class="investing-widget-wrapper">
+                                    <iframe 
+                                        src="https://kr.widgets.investing.com/live-currency-cross-rates?theme=darkTheme&hideTitle=true&pairs=1,3,7,49,2111,650" 
+                                        width="100%" 
+                                        height="400" 
+                                        frameborder="0" 
+                                        allowtransparency="true" 
+                                        marginwidth="0" 
+                                        marginheight="0"
+                                        style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                                    </iframe>
+                                    <div class="powered-by" style="font-family: Arial, Helvetica, sans-serif; text-align: center; margin-top: 10px; font-size: 12px; color: #666;">
+                                        제공자 <a href="https://kr.investing.com?utm_source=WMT&utm_medium=referral&utm_campaign=LIVE_CURRENCY_X_RATES&utm_content=Footer%20Link" target="_blank" rel="nofollow" style="color: #007bff; text-decoration: none;">Investing.com</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- High Yield Bond Spread Chart -->
+                        <div class="high-yield-section">
+                            <h2>하이일드 채권 스프레드</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://fred.stlouisfed.org/" target="_blank" class="source-link">FRED (Federal Reserve Economic Data)</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="high-yield-container">
+                                <img id="highYieldImage" src="https://fred.stlouisfed.org/graph/fredgraph.png?g=1Ms2O&height=490" alt="High Yield Bond Spread" style="width:100%; height:auto; max-width:900px; border:1px solid #dee2e6; border-radius:8px;">
+                                <div class="image-update-info" style="font-size:12px; color:#6c757d; margin-top:8px; text-align:center;">
+                                    <span id="highYieldUpdateTime">업데이트 중...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Fed Rate Monitor and Commodity Charts Section -->
+                    <div class="fed-commodity-section">
+                        <!-- FED Rate Monitor -->
+                        <div class="fed-rate-monitor-section">
+                            <h2>FED 금리 모니터링</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://kr.investing.com/central-banks/fed-rate-monitor" target="_blank" class="source-link">Investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="additional-source" style="margin-top: 8px;">
+                                <span class="source-label">CME FedWatch Tool: </span>
+                                <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" class="source-link">https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html</a>
+                            </div>
+                            <div class="fed-rate-container">
+                                <div class="tradingview-widget-container">
+                                    <!-- TradingView FED Rate Widget BEGIN -->
+                                    <div class="tradingview-widget-container">
+                                        <div id="tradingview_fed_rate" style="height: 600px; width: 100%; position: relative; background: #f8f9fa; border-radius: 8px;">
+                                            <div id="fed_rate_loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #666; font-size: 14px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                                <div style="margin-bottom: 10px; font-size: 16px; font-weight: 500;">🔄 FED 금리 차트 로딩 중...</div>
+                                                <div style="font-size: 12px; color: #999; margin-bottom: 15px;">TradingView 위젯을 초기화하고 있습니다</div>
+                                                <div style="width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                                                <style>
+                                                    @keyframes spin {
+                                                        0% { transform: rotate(0deg); }
+                                                        100% { transform: rotate(360deg); }
+                                                    }
+                                                </style>
+                                            </div>
+                                        </div>
+                                        <div class="tradingview-widget-copyright">
+                                            <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                <span class="blue-text">TradingView</span>
+                                            </a>에서 제공
+                                        </div>
+                                    </div>
+                                    <!-- TradingView FED Rate Widget END -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BDI (Baltic Dry Index) Chart -->
+                        <div class="bdi-chart-section">
+                            <div class="bdi-chart-container">
+                                <div class="trading-economics-widget-container">
+                                    <!-- TradingEconomics Widget BEGIN -->
+                                    <div class="trading-economics-widget-container">
+                                        <iframe 
+                                            src="https://tradingeconomics.com/commodity/baltic" 
+                                            width="100%" 
+                                            height="400" 
+                                            frameborder="0" 
+                                            allowtransparency="true" 
+                                            marginwidth="0" 
+                                            marginheight="0">
+                                        </iframe>
+                                    </div>
+                                    <!-- TradingEconomics Widget END -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WTI Crude Oil Spot Chart -->
+                        <div class="wti-chart-section">
+                            <h2>WTI 원유 현물</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://kr.investing.com/currencies/wti-usd" target="_blank" class="source-link">Investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="wti-chart-container">
+                                <div class="tradingview-widget-container">
+                                    <!-- TradingView Widget BEGIN -->
+                                    <div class="tradingview-widget-container">
+                                        <div id="tradingview_wti" style="height: 400px; width: 100%;"></div>
+                                        <div class="tradingview-widget-copyright">
+                                            <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                <span class="blue-text">TradingView</span>
+                                            </a>에서 제공
+                                        </div>
+                                    </div>
+                                    <!-- TradingView Widget END -->
+                                </div>
+                                <div class="wti-info">
+                                    <p class="wti-description">WTI Crude Oil Spot - 미국 서부 텍사스 중질유 현물 가격으로 즉시 인도되는 원유의 실제 거래 가격</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Market Sentiment Indicators Section -->
+                    <div class="market-sentiment-section">
+                        <div class="sentiment-grid">
+                            <!-- VIX Index Section -->
+                            <div class="vix-index-section">
+                                <h2>VIX 지수 (변동성 지수)</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://kr.tradingview.com/chart/ged98b3J/?symbol=VIX" target="_blank" class="source-link">TradingView</a>
+                                    <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                                </div>
+                                <div class="vix-container">
+                                    <div class="vix-chart-container">
+                                        <div class="tradingview-widget-container">
+                                            <div id="tradingview_vix" style="height: 300px; width: 100%;"></div>
+                                            <div class="tradingview-widget-copyright">
+                                                <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+                                                    <span class="blue-text">TradingView</span>
+                                                </a>에서 제공
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="vix-info">
+                                        <div class="current-vix-display">
+                                            <div class="vix-card">
+                                                <div class="vix-label">현재 VIX</div>
+                                                <div class="vix-value" id="currentVixValue">18.5</div>
+                                                <div class="vix-change" id="vixChange">+0.5 (+2.8%)</div>
+                                                <div class="vix-date" id="vixDate"></div>
+                                            </div>
+                                        </div>
+                                        <div class="vix-description">
+                                            <h4>VIX 지수란?</h4>
+                                            <p>VIX (Volatility Index)는 S&P 500 지수의 30일 예상 변동성을 측정하는 지수입니다.</p>
+                                            <div class="vix-levels">
+                                                <div class="level-item low">
+                                                    <span class="level-label">낮음 (0-15)</span>
+                                                    <span class="level-description">시장 안정</span>
+                                                </div>
+                                                <div class="level-item normal">
+                                                    <span class="level-label">보통 (16-25)</span>
+                                                    <span class="level-description">정상 변동성</span>
+                                                </div>
+                                                <div class="level-item high">
+                                                    <span class="level-label">높음 (26-40)</span>
+                                                    <span class="level-description">불안감 증가</span>
+                                                </div>
+                                                <div class="level-item extreme">
+                                                    <span class="level-label">극도 (40+)</span>
+                                                    <span class="level-description">공포 상태</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Market Fear and Greed Index -->
+                            <div class="market-fear-greed-section">
+                                <h2>Fear and Greed Index</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="source-link">CNN Business</a>
+                                </div>
+                                <div class="fear-greed-container">
+                                    <div class="current-index-display">
+                                        <div class="index-card">
+                                            <div class="index-label">현재 시장 심리</div>
+                                            <div class="index-value" id="currentMarketIndex">58</div>
+                                            <div class="index-classification" id="marketClassification">Neutral</div>
+                                            <div class="index-date" id="marketIndexDate"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="index-monitoring-tools">
+                                        <div class="data-note">
+                                            <p><strong>실시간 데이터:</strong> CNN Business에서 제공하는 실제 시장 데이터를 표시합니다.</p>
+                                        </div>
+                                        <div class="index-input-section">
+                                            <label for="newMarketIndex">새로운 시장 지수 (0-100):</label>
+                                            <input type="number" id="newMarketIndex" min="0" max="100" step="1" value="58" class="form-control">
+                                            <button id="updateMarketIndexBtn" class="btn btn-primary">업데이트</button>
+                                        </div>
+                                        
+                                        <div class="index-scale">
+                                            <div class="scale-item extreme-fear">
+                                                <span class="scale-label">극도 공포</span>
+                                                <span class="scale-range">0-25</span>
+                                            </div>
+                                            <div class="scale-item fear">
+                                                <span class="scale-label">공포</span>
+                                                <span class="scale-range">26-45</span>
+                                            </div>
+                                            <div class="scale-item neutral">
+                                                <span class="scale-label">중립</span>
+                                                <span class="scale-range">46-55</span>
+                                            </div>
+                                            <div class="scale-item greed">
+                                                <span class="scale-label">탐욕</span>
+                                                <span class="scale-range">56-75</span>
+                                            </div>
+                                            <div class="scale-item extreme-greed">
+                                                <span class="scale-label">극도 탐욕</span>
+                                                <span class="scale-range">76-100</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Crypto Fear and Greed Index -->
+                            <div class="crypto-fear-greed-section">
+                                <h2>Crypto Fear and Greed Index</h2>
+                                <div class="data-source">
+                                    <span class="source-label">출처: </span>
+                                    <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" class="source-link">Alternative.me</a>
+                                </div>
+                                <div class="fear-greed-container">
+                                    <div class="current-index-display">
+                                        <div class="index-card crypto">
+                                            <div class="index-label">현재 암호화폐 심리</div>
+                                            <div class="index-value" id="currentCryptoIndex">52</div>
+                                            <div class="index-classification" id="cryptoClassification">Neutral</div>
+                                            <div class="index-date" id="cryptoIndexDate"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="index-monitoring-tools">
+                                        <div class="data-note">
+                                            <p><strong>실시간 데이터:</strong> Alternative.me에서 제공하는 실제 암호화폐 시장 데이터를 표시합니다.</p>
+                                        </div>
+                                        <div class="index-input-section">
+                                            <label for="newCryptoIndex">새로운 암호화폐 지수 (0-100):</label>
+                                            <input type="number" id="newCryptoIndex" min="0" max="100" step="1" value="52" class="form-control">
+                                            <button id="updateCryptoIndexBtn" class="btn btn-primary">업데이트</button>
+                                        </div>
+                                        
+                                        <div class="crypto-analysis">
+                                            <h4>데이터 소스</h4>
+                                            <div class="analysis-grid">
+                                                <div class="analysis-item">
+                                                    <span class="analysis-label">변동성</span>
+                                                    <span class="analysis-weight">25%</span>
+                                                </div>
+                                                <div class="analysis-item">
+                                                    <span class="analysis-label">시장 모멘텀</span>
+                                                    <span class="analysis-weight">25%</span>
+                                                </div>
+                                                <div class="analysis-item">
+                                                    <span class="analysis-label">소셜 미디어</span>
+                                                    <span class="analysis-weight">15%</span>
+                                                </div>
+                                                <div class="analysis-item">
+                                                    <span class="analysis-label">지배력</span>
+                                                    <span class="analysis-weight">10%</span>
+                                                </div>
+                                                <div class="analysis-item">
+                                                    <span class="analysis-label">트렌드</span>
+                                                    <span class="analysis-weight">10%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Economic Calendar Section -->
+                        <div class="economic-calendar-section">
+                            <h2>경제캘린더</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://kr.investing.com/economic-calendar/" target="_blank" class="source-link">Investing.com</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="economic-calendar-container">
+                                <div class="investing-widget-wrapper">
+                                    <iframe 
+                                        src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_credit,_centralBanks,_confidenceIndex,_balance,_Bonds&importance=1,2,3&features=datepicker,timezone&countries=5,4,72,14,35,37,6,122,22,11,25&calType=week&timeZone=88&lang=18" 
+                                        width="100%" 
+                                        height="400" 
+                                        frameborder="0" 
+                                        allowtransparency="true" 
+                                        marginwidth="0" 
+                                        marginheight="0"
+                                        style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                                    </iframe>
+                                    <div class="powered-by" style="font-family: Arial, Helvetica, sans-serif; text-align: center; margin-top: 10px; font-size: 11px; color: #333;">
+                                        외환 포털 <a href="https://kr.Investing.com/" rel="nofollow" target="_blank" style="font-size: 11px; color: #06529D; font-weight: bold; text-decoration: none;">Investing.com 한국어</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- Yield Curve and M2 Section Container -->
+                    <div class="yield-m2-container">
+                        <!-- US Yield Curve Section -->
+                        <div class="yield-curve-section">
+                            <h2>미국 장단기 금리차 (Yield Curve)</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://fred.stlouisfed.org/" target="_blank" class="source-link">FRED (Federal Reserve Economic Data)</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            <div class="yield-curve-container">
+                                <iframe 
+                                    src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1MrYW&width=670&height=475" 
+                                    scrolling="no" 
+                                    frameborder="0" 
+                                    style="overflow:hidden; width:100%; height:525px;" 
+                                    allowTransparency="true" 
+                                    loading="lazy">
+                                </iframe>
+                            </div>
+                            
+                            <!-- Yield Curve Explanation -->
+                            <div class="yield-curve-explanation">
+                                <div class="explanation-content">
+                                    <h3>📊 금리 역전과 연준의 비전통적 정책</h3>
+                                    
+                                    <div class="explanation-section">
+                                        <h4>연준의 비전통적 정책과 금리 역전의 왜곡 가능성</h4>
+                                        <p>최근 금리 역전 현상이 예측 신호로서의 신뢰도가 낮아질 수 있다는 주장이 나오고 있습니다. 이는 연준(Fed)이 과거와 달리 비전통적 통화정책을 활용해 채권 시장에 적극 개입하면서, 금리 역전의 경제적 의미가 왜곡될 가능성이 있기 때문입니다.</p>
+                                        
+                                        <div class="policy-list">
+                                            <div class="policy-item">
+                                                <strong>양적완화(QE, Quantitative Easing):</strong> 중앙은행이 장기 국채나 자산을 대규모로 매입하여 시장에 유동성을 공급하고 장기 금리를 인위적으로 낮춤.
+                                            </div>
+                                            <div class="policy-item">
+                                                <strong>수익률곡선 제어(YCC, Yield Curve Control):</strong> 특정 만기의 국채 금리를 목표로 두고, 중앙은행이 그 금리에 맞춰 국채를 매입 또는 매도.
+                                            </div>
+                                            <div class="policy-item">
+                                                <strong>포워드 가이던스(Forward Guidance):</strong> 중앙은행이 미래의 금리 정책을 미리 발표하여 시장의 기대를 조정함.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="conclusion-section">
+                                        <h4>💡 종합적 판단의 필요성</h4>
+                                        <p>연준의 비전통적 통화정책(양적완화, YCC 등)은 장기 금리의 자연스러운 움직임을 왜곡할 수 있으며, 최근의 금리 역전이 반드시 경기침체를 예고하지 않을 가능성을 높입니다. 따라서 금리 역전만으로 경기침체를 예측하기보다, 다른 지표들(고용, 소비, 기업 이익 등)과 함께 종합적으로 판단하는 것이 필요합니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- M2 Money Supply and Velocity Section -->
+                        <div class="m2-section">
+                            <h2>M2 통화량 및 통화유통속도</h2>
+                            <div class="data-source">
+                                <span class="source-label">출처: </span>
+                                <a href="https://fred.stlouisfed.org/" target="_blank" class="source-link">FRED (Federal Reserve Economic Data)</a>
+                                <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                            </div>
+                            
+                            <div class="m2-container">
+                                <!-- M2 Money Supply -->
+                                <div class="m2-money-supply">
+                                    <h3>M2 통화량</h3>
+                                    <div class="m2-chart-container">
+                                        <iframe 
+                                            src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LPf9&width=670&height=475" 
+                                            scrolling="no" 
+                                            frameborder="0" 
+                                            style="overflow:hidden; width:100%; height:525px;" 
+                                            allowTransparency="true" 
+                                            loading="lazy">
+                                        </iframe>
+                                    </div>
+                                </div>
+                                
+                                <!-- M2 Velocity -->
+                                <div class="m2-velocity">
+                                    <h3>M2 통화유통속도</h3>
+                                    <div class="m2-chart-container">
+                                        <iframe 
+                                            src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LUZh&width=670&height=475" 
+                                            scrolling="no" 
+                                            frameborder="0" 
+                                            style="overflow:hidden; width:100%; height:525px;" 
+                                            allowTransparency="true" 
+                                            loading="lazy">
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Economic Indicators Section -->
+                    <div class="indicators-section">
+                        <h2>경제지표 (중요도별 정렬)</h2>
+                        <div class="data-source">
+                            <span class="source-label">출처: </span>
+                            <a href="https://polygon.io/" target="_blank" class="source-link">Polygon.io</a>
+                            <span class="realtime-indicator">🔄 실시간 업데이트</span>
+                        </div>
+                        
+                        <!-- Loading Indicator -->
+                        <div class="loading-indicator hidden" id="loadingIndicator">
+                            <div class="loading-spinner"></div>
+                            <p>경제 데이터를 불러오는 중...</p>
+                        </div>
+                        
+                        <!-- Error Message -->
+                        <div class="error-message hidden" id="errorMessage">
+                            <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
+                            <button class="btn btn--primary" onclick="retryDataLoad()">다시 시도</button>
+                        </div>
+                        
+                        <!-- Unified Indicators Grid -->
+                        <div class="indicators-grid" id="unifiedIndicatorsGrid">
+                            <!-- Cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Search Results Overlay -->
+        <div class="search-overlay hidden" id="searchOverlay">
+            <div class="search-results">
+                <div class="search-header">
+                    <h3>검색 결과</h3>
+                    <button id="closeSearchBtn" class="btn btn--outline">닫기</button>
+                </div>
+                <div class="search-results-content" id="searchResultsContent">
+                    <!-- Search results will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Modal -->
+        <div class="modal hidden" id="favoritesModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>즐겨찾기한 경제지표</h3>
+                    <button id="closeFavoritesBtn" class="btn btn--outline">닫기</button>
+                </div>
+                <div class="modal-body" id="favoritesContent">
+                    <p>즐겨찾기한 지표가 없습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- TradingView Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js" onload="console.log('TradingView script loaded successfully'); window.tradingViewLoaded = true;" onerror="console.error('Failed to load TradingView script'); window.tradingViewLoaded = false;"></script>
+    <script src="real-time-data-proxy.js?v=20250126"></script>
+    <script src="app.js?v=20250129"></script>
+    
+    <!-- UST Chart initialization removed to prevent infinite growth -->
+</body>
+</html>

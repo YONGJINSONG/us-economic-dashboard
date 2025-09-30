@@ -1,0 +1,101 @@
+
+글로벌 국채 금리에서 한국의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+@https://kr.investing.com/rates-bonds/south-korea-government-bonds 
+한국 1년 data-id="29294" 채권수익률 selector는 #pair_29294 > td.pid-29294-last
+한국 2년 data-id="29295" 채권수익률 selector는 #pair_29295 > td.pid-29295-last
+한국 5년 data-id="29298" 채권수익률 selector는 #pair_29298 > td.pid-29298-last
+한국 10년 data-id="29292" 채권수익률 selector는 #pair_29292 > td.pid-29292-last
+한국 30년 data-id="1052525" 채권수익률 selector는 #pair_1052525 > td.pid-1052525-last
+
+글로벌 국채 금리에서 중국의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+@https://kr.investing.com/rates-bonds/south-korea-government-bonds 
+중국 1년 data-id="29231" 채권수익률 selector는 #pair_29231 > td.pid-29231-last
+중국 2년 data-id="29232" 채권수익률 selector는 #pair_29232 > td.pid-29232-last
+중국 5년 data-id="29234" 채권수익률 selector는 #pair_29234 > td.pid-29234-last
+중국 10년 data-id="29227" 채권수익률 selector는 #pair_29227 > td.pid-29227-last
+중국 30년 data-id="29230" 채권수익률 selector는 #pair_29230 > td.pid-29230-last
+
+
+글로벌 국채 금리에서 중국 아래, 한국 위에 일본을 위치해주시고 일본의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/japan
+일본 1년 data-id="23892" 채권수익률 selector는 #pair_23892 > td.pid-23892-last
+일본 2년 data-id="23893" 채권수익률 selector는 #pair_23893 > td.pid-23893-last
+일본 5년 data-id="23896" 채권수익률 selector는 #pair_23896 > td.pid-23896-last
+일본 10년 data-id="23901" 채권수익률 selector는 #pair_23901 > td.pid-23901-last
+일본 30년 data-id="23904" 채권수익률 selector는 #pair_23904 > td.pid-23904-last
+
+글로벌 국채 금리에서 호주의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/australia
+호주 1년 data-id="23869" 채권수익률 selector는 #pair_23869 > td.pid-23869-last
+호주 2년 data-id="23870" 채권수익률 selector는 #pair_23870 > td.pid-23870-last
+호주 5년 data-id="23873" 채권수익률 selector는 #pair_23873 > td.pid-23873-last
+호주 10년 data-id="23878" 채권수익률 selector는 #pair_23878 > td.pid-23878-last
+호주 30년 data-id="1052473" 채권수익률 selector는 #pair_1052473 > td.pid-1052473-last
+
+
+글로벌 국채 금리에서 독일의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://www.investing.com/rates-bonds/germany-government-bonds?maturity_from=40&maturity_to=290
+
+https://www.investing.com/rates-bonds/germany-1-year-bond-yield
+독일 1년 data-id="23684" 채권수익률 selector는 #pair_23684 > td.pid-23684-last
+
+https://www.investing.com/rates-bonds/germany-2-year-bond-yield
+독일 2년 data-id="23685" 채권수익률 selector는 #pair_23685 > td.pid-23685-last
+
+https://www.investing.com/rates-bonds/germany-5-year-bond-yield
+독일 5년 data-id="23688" 채권수익률 selector는 #pair_23688 > td.pid-23688-last
+
+https://www.investing.com/rates-bonds/germany-10-year-bond-yield
+독일 10년 data-id="23693" 채권수익률 selector는 #pair_23693 > td.pid-23693-last
+
+https://www.investing.com/rates-bonds/germany-30-year-bond-yield
+독일 30년 data-id="23696" 채권수익률 selector는 #pair_23696 > td.pid-23696-last
+
+
+글로벌 국채 금리에서 영국의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/united-kingdom
+영국 1년 data-id="23664" 채권수익률 selector는 #pair_23664 > td.pid-23664-last
+영국 2년 data-id="23665" 채권수익률 selector는 #pair_23665 > td.pid-23665-last
+영국 5년 data-id="23668" 채권수익률 selector는 #pair_23668 > td.pid-23668-last
+영국 10년 data-id="23673" 채권수익률 selector는 #pair_23673 > td.pid-23673-last
+영국 30년 data-id="23677" 채권수익률 selector는 #pair_23677 > td.pid-23677-last
+
+글로벌 국채 금리에서 프랑스의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/france
+프랑스 1년 data-id="23769" 채권수익률 selector는 #pair_23769 > td.pid-23769-last
+프랑스 2년 data-id="23770" 채권수익률 selector는 #pair_23770 > td.pid-23770-last
+프랑스 5년 data-id="23773" 채권수익률 selector는 #pair_23773 > td.pid-23773-last
+프랑스 10년 data-id="23778" 채권수익률 selector는 #pair_23778 > td.pid-23778-last
+프랑스 30년 data-id="23781" 채권수익률 selector는 #pair_23781 > td.pid-23781-last
+
+글로벌 국채 금리에서 캐나다의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/canada
+캐나다 1년 data-id="25269" 채권수익률 selector는 #pair_25269 > td.pid-25269-last
+캐나다 2년 data-id="25270" 채권수익률 selector는 #pair_25270 > td.pid-25270-last
+캐나다 5년 data-id="25273" 채권수익률 selector는 #pair_25273 > td.pid-25273-last
+캐나다 10년 data-id="25275" 채권수익률 selector는 #pair_25275 > td.pid-25275-last
+캐나다 30년 data-id="25277" 채권수익률 selector는 #pair_25277 > td.pid-25277-last
+
+글로벌 국채 금리에서 미국의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/united-states
+미국 1년 data-id="23700" 채권수익률 selector는 #pair_23700 > td.pid-23700-last
+미국 2년 data-id="23701" 채권수익률 selector는 #pair_23701 > td.pid-23701-last
+미국 5년 data-id="23703" 채권수익률 selector는 #pair_23703 > td.pid-23703-last
+미국 10년 data-id="23705" 채권수익률 selector는 #pair_23705 > td.pid-23705-last
+미국 30년 data-id="23706" 채권수익률 selector는 #pair_23706 > td.pid-23706-last
+
+글로벌 국채 금리에서 스페인의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/spain
+스페인 1년 data-id="23797" 채권수익률 selector는 #pair_23797 > td.pid-23797-last
+스페인 2년 data-id="23798" 채권수익률 selector는 #pair_23798 > td.pid-23798-last
+스페인 5년 data-id="23801" 채권수익률 selector는 #pair_23801 > td.pid-23801-last
+스페인 10년 data-id="23806" 채권수익률 selector는 #pair_23806 > td.pid-23806-last
+스페인 30년 data-id="100155" 채권수익률 selector는 #pair_100155 > td.pid-100155-last
+
+글로벌 국채 금리에서 이탈리아의 경우 아래 사이트의 값을 참조해서 넣어주세요.
+https://kr.investing.com/markets/italy
+이탈리아 1년 data-id="23729" 채권수익률 selector는 #pair_23729 > td.pid-23729-last
+이탈리아 2년 data-id="23730" 채권수익률 selector는 #pair_23730 > td.pid-23730-last
+이탈리아 5년 data-id="23733" 채권수익률 selector는 #pair_23733 > td.pid-23733-last
+이탈리아 10년 data-id="23738" 채권수익률 selector는 #pair_23738 > td.pid-23738-last
+이탈리아 30년 data-id="41352" 채권수익률 selector는 #pair_41352 > td.pid-41352-last

@@ -1,0 +1,123 @@
+﻿{
+    "XLB":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Materials",
+                "quadrant":  "Lagging (지연)",
+                "relative_strength":  1.3372,
+                "rsm":  99.8452,
+                "rsr":  98.0767,
+                "x":  98.0767,
+                "y":  99.8452
+            },
+    "XLC":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Communication Services",
+                "quadrant":  "Leading (선도)",
+                "relative_strength":  1.7787,
+                "rsm":  101.9336,
+                "rsr":  101.5636,
+                "x":  101.5636,
+                "y":  101.9336
+            },
+    "XLE":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Energy",
+                "quadrant":  "Leading (선도)",
+                "relative_strength":  1.3846,
+                "rsm":  103.6321,
+                "rsr":  101.0948,
+                "x":  101.0948,
+                "y":  103.6321
+            },
+    "XLF":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Financials",
+                "quadrant":  "Improving (개선)",
+                "relative_strength":  0.8107,
+                "rsm":  100.7349,
+                "rsr":  98.8133,
+                "x":  98.8133,
+                "y":  100.7349
+            },
+    "XLI":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Industrials",
+                "quadrant":  "Improving (개선)",
+                "relative_strength":  2.2966,
+                "rsm":  100.3692,
+                "rsr":  98.6105,
+                "x":  98.6105,
+                "y":  100.3692
+            },
+    "XLK":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Technology",
+                "quadrant":  "Leading (선도)",
+                "relative_strength":  4.1971,
+                "rsm":  102.5033,
+                "rsr":  101.957,
+                "x":  101.957,
+                "y":  102.5033
+            },
+    "XLP":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Consumer Staples",
+                "quadrant":  "Lagging (지연)",
+                "relative_strength":  1.1734,
+                "rsm":  99.9684,
+                "rsr":  98.0564,
+                "x":  98.0564,
+                "y":  99.9684
+            },
+    "XLRE":  {
+                 "calculation_method":  "rrg_blog.py",
+                 "date":  "2025-09-29",
+                 "name":  "Real Estate",
+                 "quadrant":  "Improving (개선)",
+                 "relative_strength":  0.6304,
+                 "rsm":  100.817,
+                 "rsr":  98.7257,
+                 "x":  98.7257,
+                 "y":  100.817
+             },
+    "XLU":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Utilities",
+                "quadrant":  "Improving (개선)",
+                "relative_strength":  1.3067,
+                "rsm":  101.2573,
+                "rsr":  99.9318,
+                "x":  99.9318,
+                "y":  101.2573
+            },
+    "XLV":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Healthcare",
+                "quadrant":  "Improving (개선)",
+                "relative_strength":  2.0395,
+                "rsm":  100.7358,
+                "rsr":  98.7819,
+                "x":  98.7819,
+                "y":  100.7358
+            },
+    "XLY":  {
+                "calculation_method":  "rrg_blog.py",
+                "date":  "2025-09-29",
+                "name":  "Consumer Discretionary",
+                "quadrant":  "Leading (선도)",
+                "relative_strength":  3.6081,
+                "rsm":  101.5498,
+                "rsr":  101.1852,
+                "x":  101.1852,
+                "y":  101.5498
+            }
+}
