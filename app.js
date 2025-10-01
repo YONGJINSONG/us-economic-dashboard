@@ -4893,9 +4893,81 @@ function renderRRGChart() {
     colorIndex++;
   }
   
-  // Add center lines and arrows plugin
+  // Add quadrant backgrounds and center lines plugin
   const centerLinesAndArrowsPlugin = {
     id: 'centerLinesAndArrows',
+    beforeDatasetsDraw: function(chart) {
+      const ctx = chart.ctx;
+      const xScale = chart.scales.x;
+      const yScale = chart.scales.y;
+      
+      ctx.save();
+      
+      // Draw quadrant backgrounds (rrg_blog.py style)
+      // Lagging (빨강): x < 100, y < 100
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+      ctx.fillRect(
+        xScale.getPixelForValue(xScale.min),
+        yScale.getPixelForValue(100),
+        xScale.getPixelForValue(100) - xScale.getPixelForValue(xScale.min),
+        yScale.getPixelForValue(yScale.min) - yScale.getPixelForValue(100)
+      );
+      
+      // Weakening (노랑): x > 100, y < 100
+      ctx.fillStyle = 'rgba(255, 255, 0, 0.1)';
+      ctx.fillRect(
+        xScale.getPixelForValue(100),
+        yScale.getPixelForValue(100),
+        xScale.getPixelForValue(xScale.max) - xScale.getPixelForValue(100),
+        yScale.getPixelForValue(yScale.min) - yScale.getPixelForValue(100)
+      );
+      
+      // Leading (초록): x > 100, y > 100
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+      ctx.fillRect(
+        xScale.getPixelForValue(100),
+        yScale.getPixelForValue(yScale.max),
+        xScale.getPixelForValue(xScale.max) - xScale.getPixelForValue(100),
+        yScale.getPixelForValue(100) - yScale.getPixelForValue(yScale.max)
+      );
+      
+      // Improving (파랑): x < 100, y > 100
+      ctx.fillStyle = 'rgba(0, 0, 255, 0.1)';
+      ctx.fillRect(
+        xScale.getPixelForValue(xScale.min),
+        yScale.getPixelForValue(yScale.max),
+        xScale.getPixelForValue(100) - xScale.getPixelForValue(xScale.min),
+        yScale.getPixelForValue(100) - yScale.getPixelForValue(yScale.max)
+      );
+      
+      // Add quadrant labels
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Improving (좌상단)
+      const improvingX = (xScale.getPixelForValue(xScale.min) + xScale.getPixelForValue(100)) / 2;
+      const improvingY = (yScale.getPixelForValue(yScale.max) + yScale.getPixelForValue(100)) / 2;
+      ctx.fillText('Improving', improvingX, improvingY);
+      
+      // Leading (우상단)
+      const leadingX = (xScale.getPixelForValue(100) + xScale.getPixelForValue(xScale.max)) / 2;
+      const leadingY = (yScale.getPixelForValue(yScale.max) + yScale.getPixelForValue(100)) / 2;
+      ctx.fillText('Leading', leadingX, leadingY);
+      
+      // Weakening (우하단)
+      const weakeningX = (xScale.getPixelForValue(100) + xScale.getPixelForValue(xScale.max)) / 2;
+      const weakeningY = (yScale.getPixelForValue(100) + yScale.getPixelForValue(yScale.min)) / 2;
+      ctx.fillText('Weakening', weakeningX, weakeningY);
+      
+      // Lagging (좌하단)
+      const laggingX = (xScale.getPixelForValue(xScale.min) + xScale.getPixelForValue(100)) / 2;
+      const laggingY = (yScale.getPixelForValue(100) + yScale.getPixelForValue(yScale.min)) / 2;
+      ctx.fillText('Lagging', laggingX, laggingY);
+      
+      ctx.restore();
+    },
     afterDraw: function(chart) {
       const ctx = chart.ctx;
       const xScale = chart.scales.x;
