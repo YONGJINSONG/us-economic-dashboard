@@ -22,7 +22,7 @@ def main():
     
     import subprocess
     
-    # rrg_blog.py의 로직을 직접 실행
+    # rrg_blog.py의 정확한 로직을 직접 실행
     script_code = '''
 import pandas as pd
 import yfinance as yf
@@ -70,39 +70,67 @@ if isinstance(benchmark_data_daily.columns, pd.MultiIndex):
 else:
     benchmark_data_daily = benchmark_data_daily['Close']
 
-# 데이터 필터링
+# 데이터 필터링 (rrg_blog.py와 동일)
 latest_data_for_tickers = tickers_data_daily.iloc[::-1]
 filtered_data_for_tickers = latest_data_for_tickers.iloc[::period]
 tickers_data = filtered_data_for_tickers.iloc[::-1]
 
-latest_data_for_benchmark = benchmark_data_daily.iloc[::-1]
-filtered_data_for_benchmark = latest_data_for_benchmark.iloc[::period]
-benchmark_data = filtered_data_for_benchmark.iloc[::-1]
+latest_data_for_bm = benchmark_data_daily.iloc[::-1]
+filtered_data_for_bm = latest_data_for_bm.iloc[::period]
+benchmark_data = filtered_data_for_bm.iloc[::-1]
 
-# Relative Strength 계산
-relative_strength_ratio = (tickers_data / benchmark_data.values.reshape(-1, 1)) * 100
+window = 14  # Z-Score 계산할 주기
 
-# 이동평균 및 모멘텀 계산
-window = 14
-relative_strength_ma = relative_strength_ratio.rolling(window=window).mean()
-relative_strength_momentum = relative_strength_ma.pct_change(periods=1) * 100
+rs_tickers = []
+rsr_tickers = []
+rsr_roc_tickers = []
+rsm_tickers = []
 
-# 최신 값 추출
-latest_rs = relative_strength_ratio.iloc[-1]
-latest_momentum = relative_strength_momentum.iloc[-1]
-
-# Z-score 정규화
-rs_mean = latest_rs.mean()
-rs_std = latest_rs.std()
-if rs_std == 0:
-    rs_std = 1
-rsr_normalized = 100 + ((latest_rs - rs_mean) / rs_std)
-
-momentum_mean = latest_momentum.mean()
-momentum_std = latest_momentum.std()
-if momentum_std == 0:
-    momentum_std = 1
-rsm_normalized = 100 + ((latest_momentum - momentum_mean) / momentum_std)
+for i in range(len(tickers)):
+    # RS 계산 (rrg_blog.py와 동일)
+    ticker_series = tickers_data[tickers[i]]
+    benchmark_series = benchmark_data.iloc[:, 0] if len(benchmark_data.shape) > 1 else benchmark_data
+    
+    # 인덱스 정렬
+    common_index = ticker_series.index.intersection(benchmark_series.index)
+    ticker_aligned = ticker_series.loc[common_index]
+    benchmark_aligned = benchmark_series.loc[common_index]
+    
+    rs_tickers.append(100 * (ticker_aligned / benchmark_aligned))
+    
+    # RSR 계산 (rrg_blog.py와 동일)
+    actual_window = min(window, len(rs_tickers[i]) - 1)
+    if actual_window < 2:
+        actual_window = 2
+    
+    rolling_mean = rs_tickers[i].rolling(window=actual_window, min_periods=1).mean()
+    rolling_std = rs_tickers[i].rolling(window=actual_window, min_periods=1).std(ddof=0)
+    rolling_std = rolling_std.replace(0, 1)
+    
+    rsr_calculation = 100 + (rs_tickers[i] - rolling_mean) / rolling_std
+    rsr_tickers.append(rsr_calculation.dropna())
+    
+    # RSR ROC 계산
+    if len(rsr_tickers[i]) > 0:
+        rsr_roc_tickers.append(100 * ((rsr_tickers[i] / rsr_tickers[i].iloc[0]) - 1))
+        
+        # RSM 계산 (rrg_blog.py와 동일)
+        rsm_actual_window = min(window, len(rsr_roc_tickers[i]) - 1)
+        if rsm_actual_window < 2:
+            rsm_actual_window = 2
+        
+        rsm_rolling_mean = rsr_roc_tickers[i].rolling(window=rsm_actual_window, min_periods=1).mean()
+        rsm_rolling_std = rsr_roc_tickers[i].rolling(window=rsm_actual_window, min_periods=1).std(ddof=0)
+        rsm_rolling_std = rsm_rolling_std.replace(0, 1)
+        
+        rsm_tickers.append((101 + (rsr_roc_tickers[i] - rsm_rolling_mean) / rsm_rolling_std).dropna())
+        
+        # 인덱스 정렬
+        rsr_tickers[i] = rsr_tickers[i][rsr_tickers[i].index.isin(rsm_tickers[i].index)]
+        rsm_tickers[i] = rsm_tickers[i][rsm_tickers[i].index.isin(rsr_tickers[i].index)]
+    else:
+        rsr_roc_tickers.append(pd.Series())
+        rsm_tickers.append(pd.Series())
 
 # JSON 데이터 생성
 rrg_data = {}
@@ -118,11 +146,11 @@ def get_quadrant_status(x, y):
     else:
         return "Weakening (약화)"
 
-for ticker in tickers:
-    if not pd.isna(rsr_normalized[ticker]) and not pd.isna(rsm_normalized[ticker]):
-        x = float(rsr_normalized[ticker])
-        y = float(rsm_normalized[ticker])
-        rs = float(latest_rs[ticker])
+for i, ticker in enumerate(tickers):
+    if len(rsr_tickers[i]) > 0 and len(rsm_tickers[i]) > 0:
+        x = float(rsr_tickers[i].iloc[-1])
+        y = float(rsm_tickers[i].iloc[-1])
+        rs = float(rs_tickers[i].iloc[-1])
         
         rrg_data[ticker] = {
             "name": sector_names[ticker],
