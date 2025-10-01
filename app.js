@@ -4902,24 +4902,40 @@ function renderRRGChart() {
           '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471'
         ];
         
+        // rrgData의 순서를 따라 타임라인을 그려서 색상 일치 보장
         let colorIndex = 0;
-        for (const [symbol, data] of Object.entries(window.rrgTimelineData)) {
-          // 실제 차트 데이터와 timeline 데이터 매칭 확인
-          const chartData = rrgData[symbol];
-          if (!chartData || !data.timeline || data.timeline.length < 2) {
+        for (const [symbol, chartData] of Object.entries(rrgData)) {
+          const timelineEntry = window.rrgTimelineData[symbol];
+          
+          // 타임라인 데이터가 없거나 포인트가 2개 미만이면 스킵
+          if (!timelineEntry || !timelineEntry.timeline || timelineEntry.timeline.length < 2) {
             colorIndex++;
             continue;
           }
           
           const color = colors[colorIndex % colors.length];
+          const timeline = timelineEntry.timeline;
+          
+          // 타임라인의 마지막 포인트를 차트 데이터의 실제 위치로 보정
+          const lastPoint = timeline[timeline.length - 1];
+          const originalX = lastPoint.x;
+          const originalY = lastPoint.y;
+          lastPoint.x = chartData.x;
+          lastPoint.y = chartData.y;
+          
+          // 디버깅: 타임라인 마지막 포인트와 차트 포인트 일치 확인
+          if (Math.abs(originalX - chartData.x) > 0.1 || Math.abs(originalY - chartData.y) > 0.1) {
+            console.log(`⚠️ ${symbol}: Timeline adjusted from (${originalX.toFixed(2)}, ${originalY.toFixed(2)}) to (${chartData.x.toFixed(2)}, ${chartData.y.toFixed(2)})`);
+          }
+          
           ctx.strokeStyle = color;
           ctx.lineWidth = 1.8;  // 60% of 3 = 1.8
           ctx.setLineDash([]); // Solid line for arrows
           
           // timeline의 모든 포인트를 연결하여 화살표 그리기
-          for (let i = 1; i < data.timeline.length; i++) {
-            const prevPoint = data.timeline[i - 1];
-            const currPoint = data.timeline[i];
+          for (let i = 1; i < timeline.length; i++) {
+            const prevPoint = timeline[i - 1];
+            const currPoint = timeline[i];
             
             const x1 = xScale.getPixelForValue(prevPoint.x);
             const y1 = yScale.getPixelForValue(prevPoint.y);
@@ -4933,7 +4949,7 @@ function renderRRGChart() {
             ctx.stroke();
             
             // Draw arrow head (마지막 세그먼트에만)
-            if (i === data.timeline.length - 1) {
+            if (i === timeline.length - 1) {
               const angle = Math.atan2(y2 - y1, x2 - x1);
               
               // 화살표 길이를 차트 크기에 비례하도록 계산
