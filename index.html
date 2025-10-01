@@ -591,6 +591,8 @@
                                 <div class="data-source">
                                     <span class="source-label">출처: </span>
                                     <a href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" class="source-link">Alternative.me</a>
+                                    <span class="realtime-indicator" id="cryptoRealtimeIndicator">🔄 실시간 업데이트 (5분마다)</span>
+                                    <span class="fallback-indicator hidden" id="cryptoFallbackIndicator">⚠️ API 연결 실패 - 추정값 사용</span>
                                 </div>
                                 <div class="fear-greed-container">
                                     <div class="current-index-display">
@@ -609,7 +611,10 @@
                                         <div class="index-input-section">
                                             <label for="newCryptoIndex">새로운 암호화폐 지수 (0-100):</label>
                                             <input type="number" id="newCryptoIndex" min="0" max="100" step="1" value="52" class="form-control">
-                                            <button id="updateCryptoIndexBtn" class="btn btn-primary">업데이트</button>
+                                            <div class="button-group">
+                                                <button id="updateCryptoIndexBtn" class="btn btn-primary">수동 업데이트</button>
+                                                <button id="refreshCryptoDataBtn" class="btn btn-secondary">🔄 실시간 새로고침</button>
+                                            </div>
                                         </div>
                                         
                                         <div class="crypto-analysis">
@@ -683,14 +688,29 @@
                                 <span class="realtime-indicator">🔄 실시간 업데이트</span>
                             </div>
                             <div class="yield-curve-container">
-                                <iframe 
-                                    src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1MrYW&width=670&height=475" 
-                                    scrolling="no" 
-                                    frameborder="0" 
-                                    style="overflow:hidden; width:100%; height:525px;" 
-                                    allowTransparency="true" 
-                                    loading="lazy">
-                                </iframe>
+                                <!-- PC/Tablet: iframe -->
+                                <div class="fred-desktop-only">
+                                    <div class="fred-wrap">
+                                        <div class="fred-ratio">
+                                            <iframe 
+                                                src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1MrYW&width=670&height=475" 
+                                                scrolling="no" 
+                                                frameborder="0" 
+                                                allowTransparency="true" 
+                                                loading="lazy"
+                                                title="미국 장단기 금리차">
+                                            </iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mobile: 이미지 -->
+                                <div class="fred-mobile-only">
+                                    <img 
+                                        src="https://fred.stlouisfed.org/graph/fredgraph.png?g=1MHKb&height=490" 
+                                        alt="미국 장단기 금리차" 
+                                        loading="lazy"
+                                        style="width:100%; height:auto; max-width:900px; margin:0 auto; display:block; border-radius:8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                </div>
                             </div>
                             
                             <!-- Yield Curve Explanation -->
@@ -737,14 +757,29 @@
                                 <div class="m2-money-supply">
                                     <h3>M2 통화량</h3>
                                     <div class="m2-chart-container">
-                                        <iframe 
-                                            src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LPf9&width=670&height=475" 
-                                            scrolling="no" 
-                                            frameborder="0" 
-                                            style="overflow:hidden; width:100%; height:525px;" 
-                                            allowTransparency="true" 
-                                            loading="lazy">
-                                        </iframe>
+                                        <!-- PC/Tablet: iframe -->
+                                        <div class="fred-desktop-only">
+                                            <div class="fred-wrap">
+                                                <div class="fred-ratio">
+                                                    <iframe 
+                                                        src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LPf9&width=670&height=475" 
+                                                        scrolling="no" 
+                                                        frameborder="0" 
+                                                        allowTransparency="true" 
+                                                        loading="lazy"
+                                                        title="M2 통화량">
+                                                    </iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Mobile: 이미지 -->
+                                        <div class="fred-mobile-only">
+                                            <img 
+                                                src="https://fred.stlouisfed.org/graph/fredgraph.png?g=1MDv5&height=490" 
+                                                alt="M2 통화량" 
+                                                loading="lazy"
+                                                style="width:100%; height:auto; max-width:900px; margin:0 auto; display:block; border-radius:8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -752,14 +787,29 @@
                                 <div class="m2-velocity">
                                     <h3>M2 통화유통속도</h3>
                                     <div class="m2-chart-container">
-                                        <iframe 
-                                            src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LUZh&width=670&height=475" 
-                                            scrolling="no" 
-                                            frameborder="0" 
-                                            style="overflow:hidden; width:100%; height:525px;" 
-                                            allowTransparency="true" 
-                                            loading="lazy">
-                                        </iframe>
+                                        <!-- PC/Tablet: iframe -->
+                                        <div class="fred-desktop-only">
+                                            <div class="fred-wrap">
+                                                <div class="fred-ratio">
+                                                    <iframe 
+                                                        src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1LUZh&width=670&height=475" 
+                                                        scrolling="no" 
+                                                        frameborder="0" 
+                                                        allowTransparency="true" 
+                                                        loading="lazy"
+                                                        title="M2 통화유통속도">
+                                                    </iframe>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Mobile: 이미지 -->
+                                        <div class="fred-mobile-only">
+                                            <img 
+                                                src="https://fred.stlouisfed.org/graph/fredgraph.png?g=1MHKs&height=490" 
+                                                alt="M2 통화유통속도" 
+                                                loading="lazy"
+                                                style="width:100%; height:auto; max-width:900px; margin:0 auto; display:block; border-radius:8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

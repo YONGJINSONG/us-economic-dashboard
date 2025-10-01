@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 RRG Blog API Server
 rrg_blog.py의 계산 방식을 기반으로 한 정확한 RRG API 서버
 """
+
+import sys
+import io
+# Windows 인코딩 문제 해결
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 import pandas as pd
 import numpy as np
@@ -184,8 +191,18 @@ class RRGBlogCalculator:
             if tickers_data is None or benchmark_data is None:
                 return None
             
-            # RSR과 RSM 계산
-            rsr_tickers, rsm_tickers = self.calculate_rsr_rsm(tickers_data, benchmark_data, period_days)
+            # period에 맞는 샘플링 주기 설정
+            if period_days <= 21:
+                sample_period = 3  # 1개월: 3일 간격
+            elif period_days <= 63:
+                sample_period = 5  # 3개월: 5일 간격
+            elif period_days <= 126:
+                sample_period = 7  # 6개월: 7일 간격
+            else:
+                sample_period = 10  # 1년: 10일 간격
+            
+            # RSR과 RSM 계산 (샘플링 주기 적용)
+            rsr_tickers, rsm_tickers = self.calculate_rsr_rsm(tickers_data, benchmark_data, sample_period)
             
             # 시간별 데이터 생성
             timeline_data = {}
@@ -195,13 +212,13 @@ class RRGBlogCalculator:
                     rsr_series = rsr_tickers[i]
                     rsm_series = rsm_tickers[i]
                     
-                    # 시간별 포인트 생성
+                    # 시간별 포인트 생성 (모든 포인트 사용)
                     timeline_points = []
                     for j in range(len(rsr_series)):
                         timeline_points.append({
                             'date': rsr_series.index[j].strftime('%Y-%m-%d'),
-                            'x': round(float(rsr_series.iloc[j]), 4),  # 정밀도 향상
-                            'y': round(float(rsm_series.iloc[j]), 4)   # 정밀도 향상
+                            'x': round(float(rsr_series.iloc[j]), 4),
+                            'y': round(float(rsm_series.iloc[j]), 4)
                         })
                     
                     timeline_data[symbol] = {
@@ -210,11 +227,15 @@ class RRGBlogCalculator:
                         'current': timeline_points[-1] if timeline_points else None,
                         '_source': 'rrg_blog_api'
                     }
+                    
+                    print(f"✓ {symbol} timeline: {len(timeline_points)} points")
             
             return timeline_data
             
         except Exception as e:
             print(f"Error generating RRG timeline data: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def generate_rrg_data(self, period_days=63):
@@ -226,8 +247,18 @@ class RRGBlogCalculator:
         if tickers_data is None or benchmark_data is None:
             return None
         
+        # period에 맞는 샘플링 주기 설정
+        if period_days <= 21:
+            sample_period = 3  # 1개월: 3일 간격
+        elif period_days <= 63:
+            sample_period = 5  # 3개월: 5일 간격
+        elif period_days <= 126:
+            sample_period = 7  # 6개월: 7일 간격
+        else:
+            sample_period = 10  # 1년: 10일 간격
+        
         # RSR, RSM 계산
-        rsr_tickers, rsm_tickers = self.calculate_rsr_rsm(tickers_data, benchmark_data)
+        rsr_tickers, rsm_tickers = self.calculate_rsr_rsm(tickers_data, benchmark_data, sample_period)
         
         # 결과 데이터 구성
         result = {}

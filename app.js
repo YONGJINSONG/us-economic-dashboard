@@ -1326,6 +1326,25 @@ function setupEventListeners() {
     updateCryptoIndexBtn.addEventListener('click', updateCryptoIndex);
   }
   
+  const refreshCryptoDataBtn = document.getElementById('refreshCryptoDataBtn');
+  if (refreshCryptoDataBtn) {
+    refreshCryptoDataBtn.addEventListener('click', async () => {
+      refreshCryptoDataBtn.disabled = true;
+      refreshCryptoDataBtn.textContent = '🔄 새로고침 중...';
+      
+      try {
+        await fetchCryptoFearGreedIndex();
+        showUpdateMessage('Crypto Fear & Greed Index가 새로고침되었습니다.', 'success');
+      } catch (error) {
+        console.error('Failed to refresh crypto data:', error);
+        showUpdateMessage('데이터 새로고침에 실패했습니다.', 'error');
+      } finally {
+        refreshCryptoDataBtn.disabled = false;
+        refreshCryptoDataBtn.textContent = '🔄 실시간 새로고침';
+      }
+    });
+  }
+  
   // News refresh button
   const refreshNewsBtn = document.getElementById('refreshNewsBtn');
   if (refreshNewsBtn) {
@@ -2654,7 +2673,8 @@ function initializeDollarIndexChart() {
 function initializeFedRateChartWithRetry() {
   let retryCount = 0;
   const maxRetries = 5;
-  const symbols = ["FEDFUNDS"]; // 원래 심볼만 사용
+  // FRED:FEDFUNDS: Federal Funds Rate from FRED (Federal Reserve Economic Data)
+  const symbols = ["FRED:FEDFUNDS"];
   let currentSymbolIndex = 0;
   
   function attemptInitialization() {
@@ -2694,11 +2714,12 @@ function initializeFedRateChartWithRetry() {
 
     // 위젯 초기화 시도 - 최소한의 설정으로 시도
     try {
-      // 타임아웃 설정 (10초 후 fallback 차트 표시)
+      // 타임아웃 설정 (30초 후 fallback 표시)
       const timeoutId = setTimeout(() => {
-        console.log('TradingView 위젯 초기화 타임아웃, fallback 차트 표시');
+        console.log(`TradingView 위젯 초기화 타임아웃 (심볼: ${symbols[currentSymbolIndex]})`);
+        console.log('fallback 차트 표시');
         showFallbackChart();
-      }, 10000);
+      }, 30000);
       
       new TradingView.widget({
         "autosize": true,
@@ -2727,7 +2748,7 @@ function initializeFedRateChartWithRetry() {
         "studies": [],
         "studies_overrides": {},
         "onReady": function() {
-          console.log('TradingView FED 금리 위젯 초기화 완료');
+          console.log('TradingView FED 금리 위젯 초기화 완료 (FRED:FEDFUNDS)');
           clearTimeout(timeoutId);
           hideLoading();
         },
@@ -2744,7 +2765,7 @@ function initializeFedRateChartWithRetry() {
       if (retryCount < maxRetries) {
         showRetryMessage();
         setTimeout(attemptInitialization, 3000);
-                } else {
+      } else {
         console.log('모든 재시도 실패, fallback 차트 표시');
         showFallbackChart();
       }
@@ -3593,6 +3614,67 @@ function hideFallbackIndicator(dataType) {
   if (indicator) {
     indicator.remove();
   }
+  
+  // For crypto fear and greed, also update the specific indicators
+  if (dataType === 'cryptoFearGreed') {
+    const realtimeIndicator = document.getElementById('cryptoRealtimeIndicator');
+    const fallbackIndicator = document.getElementById('cryptoFallbackIndicator');
+    
+    if (realtimeIndicator) {
+      realtimeIndicator.classList.remove('hidden');
+      realtimeIndicator.classList.remove('updating');
+    }
+    
+    if (fallbackIndicator) {
+      fallbackIndicator.classList.add('hidden');
+    }
+  }
+}
+
+// Show crypto fear and greed updating indicator
+function showCryptoUpdatingIndicator() {
+  const realtimeIndicator = document.getElementById('cryptoRealtimeIndicator');
+  const fallbackIndicator = document.getElementById('cryptoFallbackIndicator');
+  
+  if (realtimeIndicator) {
+    realtimeIndicator.classList.add('updating');
+    realtimeIndicator.textContent = '🔄 데이터 업데이트 중...';
+  }
+  
+  if (fallbackIndicator) {
+    fallbackIndicator.classList.add('hidden');
+  }
+}
+
+// Show crypto fear and greed fallback indicator
+function showCryptoFallbackIndicator(message) {
+  const realtimeIndicator = document.getElementById('cryptoRealtimeIndicator');
+  const fallbackIndicator = document.getElementById('cryptoFallbackIndicator');
+  
+  if (realtimeIndicator) {
+    realtimeIndicator.classList.add('hidden');
+  }
+  
+  if (fallbackIndicator) {
+    fallbackIndicator.classList.remove('hidden');
+    fallbackIndicator.textContent = message;
+  }
+}
+
+// Show crypto fear and greed success indicator
+function showCryptoSuccessIndicator() {
+  const realtimeIndicator = document.getElementById('cryptoRealtimeIndicator');
+  const fallbackIndicator = document.getElementById('cryptoFallbackIndicator');
+  
+  if (realtimeIndicator) {
+    realtimeIndicator.classList.remove('hidden');
+    realtimeIndicator.classList.remove('updating');
+    realtimeIndicator.textContent = '🔄 실시간 업데이트 (5분마다)';
+  }
+  
+  if (fallbackIndicator) {
+    fallbackIndicator.classList.add('hidden');
+  }
 }
 
 function updateCryptoIndexDisplay() {
@@ -3870,11 +3952,21 @@ async function fetchCryptoFearGreedIndex() {
   try {
     console.log('Fetching Crypto Fear & Greed Index...');
     
-    // Try multiple approaches to bypass CSP issues
+    // Show updating indicator
+    showCryptoUpdatingIndicator();
+    
+    // Try multiple approaches to bypass CSP issues with more reliable proxies
     const approaches = [
-      // Approach 1: Use CORS proxy
+      // Approach 1: CORS Anywhere (most reliable)
       {
-        name: 'CORS Proxy',
+        name: 'CORS Anywhere',
+        url: 'https://cors-anywhere.herokuapp.com/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
+      },
+      // Approach 2: AllOrigins (backup)
+      {
+        name: 'AllOrigins',
         url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.alternative.me/fng/'),
         parser: (data) => {
           try {
@@ -3883,19 +3975,50 @@ async function fetchCryptoFearGreedIndex() {
           } catch (e) {
             return null;
           }
-        }
+        },
+        timeout: 10000
       },
-      // Approach 2: Alternative CORS proxy
+      // Approach 3: CORS Proxy (alternative)
       {
-        name: 'Alternative CORS Proxy',
-        url: 'https://cors-anywhere.herokuapp.com/https://api.alternative.me/fng/',
-        parser: (data) => data
+        name: 'CORS Proxy',
+        url: 'https://corsproxy.io/?https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
       },
-      // Approach 3: Direct fetch (may fail due to CSP)
+      // Approach 4: Thing Proxy
+      {
+        name: 'Thing Proxy',
+        url: 'https://thingproxy.freeboard.io/fetch/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
+      },
+      // Approach 5: CORS Bridge
+      {
+        name: 'CORS Bridge',
+        url: 'https://cors.bridged.cc/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
+      },
+      // Approach 6: CORS EU
+      {
+        name: 'CORS EU',
+        url: 'https://cors.eu.org/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
+      },
+      // Approach 7: YACDN
+      {
+        name: 'YACDN',
+        url: 'https://yacdn.org/proxy/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 10000
+      },
+      // Approach 8: Direct API (last resort)
       {
         name: 'Direct API',
         url: 'https://api.alternative.me/fng/',
-        parser: (data) => data
+        parser: (data) => data,
+        timeout: 5000
       }
     ];
     
@@ -3903,13 +4026,21 @@ async function fetchCryptoFearGreedIndex() {
       try {
         console.log(`Trying ${approach.name}...`);
         
+        // Create AbortController for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), approach.timeout || 10000);
+        
         const response = await fetch(approach.url, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          },
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json();
@@ -3917,21 +4048,38 @@ async function fetchCryptoFearGreedIndex() {
           
           if (parsedData && parsedData.data && parsedData.data.length > 0) {
             const cryptoIndex = parseInt(parsedData.data[0].value);
-            currentCryptoIndex = cryptoIndex;
-            updateCryptoIndexDisplay();
+            const classification = parsedData.data[0].value_classification;
+            const timestamp = parsedData.data[0].timestamp;
             
-            const cryptoInput = document.getElementById('newCryptoIndex');
-            if (cryptoInput) cryptoInput.value = cryptoIndex;
-            
-            // Hide fallback indicator since we got real data
-            hideFallbackIndicator('cryptoFearGreed');
-            
-            console.log(`✅ Crypto Fear & Greed Index updated to: ${cryptoIndex} (via ${approach.name})`);
-            return;
+            if (!isNaN(cryptoIndex) && cryptoIndex >= 0 && cryptoIndex <= 100) {
+              currentCryptoIndex = cryptoIndex;
+              updateCryptoIndexDisplay();
+              
+              const cryptoInput = document.getElementById('newCryptoIndex');
+              if (cryptoInput) cryptoInput.value = cryptoIndex;
+              
+              // Hide fallback indicator since we got real data
+              hideFallbackIndicator('cryptoFearGreed');
+              showCryptoSuccessIndicator();
+              
+              // Show success message with timestamp
+              const date = new Date(timestamp * 1000);
+              const timeStr = date.toLocaleString('ko-KR');
+              showUpdateMessage(`Crypto Fear & Greed Index 업데이트: ${cryptoIndex} (${classification}) - ${timeStr} (via ${approach.name})`);
+              
+              console.log(`✅ Crypto Fear & Greed Index updated to: ${cryptoIndex} (${classification}) at ${timeStr} (via ${approach.name})`);
+              return;
+            }
           }
+        } else {
+          console.log(`❌ ${approach.name} failed with status: ${response.status}`);
         }
       } catch (error) {
-        console.log(`❌ ${approach.name} failed:`, error.message);
+        if (error.name === 'AbortError') {
+          console.log(`⏰ ${approach.name} timed out`);
+        } else {
+          console.log(`❌ ${approach.name} failed:`, error.message);
+        }
         continue;
       }
     }
@@ -3946,7 +4094,8 @@ async function fetchCryptoFearGreedIndex() {
     if (cryptoInput) cryptoInput.value = cryptoIndex;
     
     // Show fallback indicator
-    showFallbackIndicator('cryptoFearGreed', `Crypto Fear & Greed Index: ${cryptoIndex} (현실적 추정값)`);
+    showFallbackIndicator('cryptoFearGreed', `Crypto Fear & Greed Index: ${cryptoIndex} (현실적 추정값 - API 연결 실패)`);
+    showCryptoFallbackIndicator('⚠️ API 연결 실패 - 현실적 추정값 사용');
     
     console.log(`Crypto Fear & Greed Index fallback to: ${cryptoIndex} (현실적 추정값)`);
     
@@ -3962,7 +4111,8 @@ async function fetchCryptoFearGreedIndex() {
     if (cryptoInput) cryptoInput.value = cryptoIndex;
     
     // Show fallback indicator
-    showFallbackIndicator('cryptoFearGreed', `Crypto Fear & Greed Index: ${cryptoIndex} (기본값)`);
+    showFallbackIndicator('cryptoFearGreed', `Crypto Fear & Greed Index: ${cryptoIndex} (기본값 - 오류 발생)`);
+    showCryptoFallbackIndicator('⚠️ 오류 발생 - 기본값 사용');
   }
 }
 
@@ -4004,11 +4154,11 @@ function startRealTimeUpdates() {
   fetchRealFearGreedData();
   fetchVixData();
   
-  // Update every 10 minutes (600000ms) to fetch real data
-  setInterval(fetchRealFearGreedData, 600000);
+  // Update every 5 minutes (300000ms) to fetch real data
+  setInterval(fetchRealFearGreedData, 300000);
   setInterval(fetchVixData, 600000);
   
-  console.log('Real Fear & Greed Index and VIX updates started - Updates every 10 minutes');
+  console.log('Real Fear & Greed Index and VIX updates started - Crypto updates every 5 minutes, VIX every 10 minutes');
 }
 
 // VIX Data Functions
@@ -4707,32 +4857,26 @@ function renderRRGChart() {
       const xScale = chart.scales.x;
       const yScale = chart.scales.y;
       
-      // Draw center lines at 100, 100
+      // Draw center lines at 100, 100 (RRG 중심점)
       ctx.save();
-      ctx.strokeStyle = 'gray';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]); // Dashed line
       
-      // Horizontal line at y=100
+      // Horizontal line at y=100 (가로 중심선)
       ctx.beginPath();
-      ctx.moveTo(xScale.getPixelForValue(96.5), yScale.getPixelForValue(100));
-      ctx.lineTo(xScale.getPixelForValue(103.5), yScale.getPixelForValue(100));
+      ctx.moveTo(xScale.getPixelForValue(xScale.min), yScale.getPixelForValue(100));
+      ctx.lineTo(xScale.getPixelForValue(xScale.max), yScale.getPixelForValue(100));
       ctx.stroke();
       
-      // Vertical line at x=100
+      // Vertical line at x=100 (세로 중심선)
       ctx.beginPath();
-      ctx.moveTo(xScale.getPixelForValue(100), yScale.getPixelForValue(98.5));
-      ctx.lineTo(xScale.getPixelForValue(100), yScale.getPixelForValue(104.5));
+      ctx.moveTo(xScale.getPixelForValue(100), yScale.getPixelForValue(yScale.min));
+      ctx.lineTo(xScale.getPixelForValue(100), yScale.getPixelForValue(yScale.max));
       ctx.stroke();
       
       // Draw arrows for each sector if timeline data is available
-      console.log('🔍 Arrow rendering check - timeline data:', window.rrgTimelineData);
-      console.log('🔍 Timeline data type:', typeof window.rrgTimelineData);
-      console.log('🔍 Timeline data keys:', window.rrgTimelineData ? Object.keys(window.rrgTimelineData) : 'No data');
-      
       if (window.rrgTimelineData) {
-        console.log('✅ Timeline data exists, drawing arrows...');
-        console.log('🔍 Sample timeline data (XLB):', window.rrgTimelineData.XLB);
         const colors = [
           '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
           '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471'
@@ -4740,101 +4884,58 @@ function renderRRGChart() {
         
         let colorIndex = 0;
         for (const [symbol, data] of Object.entries(window.rrgTimelineData)) {
-          console.log(`🔍 Processing ${symbol}:`, data);
-          
           // 실제 차트 데이터와 timeline 데이터 매칭 확인
           const chartData = rrgData[symbol];
-          if (!chartData) {
-            console.log(`⚠️ No chart data for ${symbol}, skipping arrows`);
+          if (!chartData || !data.timeline || data.timeline.length < 2) {
+            colorIndex++;
             continue;
           }
           
-          if (data.timeline && data.timeline.length > 1) {
-            console.log(`✅ Drawing arrows for ${symbol} with ${data.timeline.length} points`);
-            console.log(`🔍 Chart data for ${symbol}:`, chartData);
-            const color = colors[colorIndex % colors.length];
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
-            ctx.setLineDash([]); // Solid line for arrows
+          const color = colors[colorIndex % colors.length];
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.8;  // 60% of 3 = 1.8
+          ctx.setLineDash([]); // Solid line for arrows
+          
+          // timeline의 모든 포인트를 연결하여 화살표 그리기
+          for (let i = 1; i < data.timeline.length; i++) {
+            const prevPoint = data.timeline[i - 1];
+            const currPoint = data.timeline[i];
             
-            // 실제 차트 데이터 기반으로 화살표 그리기 (timeline 데이터 부정확성 해결)
-            // 현재 포인트에서 이전 포인트로 향하는 화살표 (rrg_blog.py 방식)
-            if (data.timeline && data.timeline.length >= 2) {
-              // 현재 포인트 (실제 차트 데이터)
-              const currentPoint = {
-                x: chartData.x,
-                y: chartData.y
-              };
-              
-              // 이전 포인트 (현실적인 추정)
-              // 실제 시장 움직임을 반영한 방향성 있는 화살표 생성
-              const timeDiff = 63; // 3개월 기간
-              const volatility = 1.5; // 변동성 계수
-              
-              // 각 섹터별 특성에 맞는 고정된 방향성 부여 (안정적인 화살표)
-              let directionX = 0, directionY = 0;
-              
-              // 각 섹터별로 고정된 방향 설정 (Math.random() 대신 고정값 사용)
-              const sectorDirections = {
-                'XLK': { x: 0.8, y: 0.6 },    // Technology - 우상향
-                'XLC': { x: 0.5, y: 0.7 },    // Communication - 상향
-                'XLY': { x: 0.9, y: 0.4 },    // Consumer Discretionary - 우향
-                'XLE': { x: 1.2, y: 1.0 },    // Energy - 우상향 (변동성 큼)
-                'XLB': { x: 1.0, y: 1.1 },    // Materials - 상향 (변동성 큼)
-                'XLF': { x: -0.3, y: 0.2 },   // Financials - 좌상향
-                'XLI': { x: -0.2, y: 0.1 },   // Industrials - 좌상향
-                'XLP': { x: -0.5, y: -0.1 },  // Consumer Staples - 좌하향
-                'XLU': { x: 0.1, y: 0.5 },    // Utilities - 상향
-                'XLV': { x: -0.2, y: 0.2 },   // Healthcare - 좌상향
-                'XLRE': { x: -0.3, y: 0.3 }   // Real Estate - 좌상향
-              };
-              
-              if (sectorDirections[symbol]) {
-                directionX = sectorDirections[symbol].x;
-                directionY = sectorDirections[symbol].y;
-              } else {
-                // 기본값 (중립)
-                directionX = 0.2;
-                directionY = 0.2;
-              }
-              
-              const previousPoint = {
-                x: currentPoint.x - directionX,
-                y: currentPoint.y - directionY
-              };
-              
-              console.log(`🔍 Drawing arrow for ${symbol}: (${previousPoint.x.toFixed(4)}, ${previousPoint.y.toFixed(4)}) -> (${currentPoint.x}, ${currentPoint.y})`);
-              
-              const x1 = xScale.getPixelForValue(previousPoint.x);
-              const y1 = yScale.getPixelForValue(previousPoint.y);
-              const x2 = xScale.getPixelForValue(currentPoint.x);
-              const y2 = yScale.getPixelForValue(currentPoint.y);
-              
-              // Draw line
-              ctx.beginPath();
-              ctx.moveTo(x1, y1);
-              ctx.lineTo(x2, y2);
-              ctx.stroke();
-              
-              // Draw arrow head
+            const x1 = xScale.getPixelForValue(prevPoint.x);
+            const y1 = yScale.getPixelForValue(prevPoint.y);
+            const x2 = xScale.getPixelForValue(currPoint.x);
+            const y2 = yScale.getPixelForValue(currPoint.y);
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // Draw arrow head (마지막 세그먼트에만)
+            if (i === data.timeline.length - 1) {
               const angle = Math.atan2(y2 - y1, x2 - x1);
-              const arrowLength = 8;
-              const arrowAngle = Math.PI / 6; // 30 degrees
+              const arrowLength = 15;  // 화살표 길이 증가
+              const arrowAngle = Math.PI / 7; // 화살표 각도를 더 좁게
               
+              // 화살표 머리를 채워진 삼각형으로 그리기
+              ctx.fillStyle = color;
               ctx.beginPath();
               ctx.moveTo(x2, y2);
               ctx.lineTo(
                 x2 - arrowLength * Math.cos(angle - arrowAngle),
                 y2 - arrowLength * Math.sin(angle - arrowAngle)
               );
-              ctx.moveTo(x2, y2);
               ctx.lineTo(
                 x2 - arrowLength * Math.cos(angle + arrowAngle),
                 y2 - arrowLength * Math.sin(angle + arrowAngle)
               );
+              ctx.closePath();
+              ctx.fill();
               ctx.stroke();
             }
           }
+          
           colorIndex++;
         }
       }
@@ -4886,12 +4987,12 @@ function renderRRGChart() {
       scales: {
         x: {
           type: 'linear',
-          position: 'center',
-          min: 96.5,  // 모든 섹터가 잘 보이도록 범위 확장 (X: 98.06~101.96)
-          max: 103.5, // 모든 섹터가 잘 보이도록 범위 확장
+          position: 'bottom',
+          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위
+          max: 104,  // RSR은 100을 중심으로 정규화됨
           title: {
             display: true,
-            text: 'Relative Strength Ratio',
+            text: 'Relative Strength Ratio (RSR)',
             font: {
               size: 14,
               weight: 'bold'
@@ -4903,18 +5004,18 @@ function renderRRGChart() {
           },
           ticks: {
             callback: function(value) {
-              return value.toFixed(1);
+              return value.toFixed(0);
             }
           }
         },
         y: {
           type: 'linear',
-          position: 'center',
-          min: 98.5,  // 모든 섹터가 잘 보이도록 범위 확장 (Y: 99.85~103.63)
-          max: 104.5, // 모든 섹터가 잘 보이도록 범위 확장
+          position: 'left',
+          min: 96,   // rrg_blog.py 방식: 100 중심 (101±4)
+          max: 106,  // RSM은 101을 중심으로 정규화됨
           title: {
             display: true,
-            text: 'Relative Strength Momentum',
+            text: 'Relative Strength Momentum (RSM)',
             font: {
               size: 14,
               weight: 'bold'
@@ -4926,7 +5027,7 @@ function renderRRGChart() {
           },
           ticks: {
             callback: function(value) {
-              return value.toFixed(1);
+              return value.toFixed(0);
             }
           }
         }
@@ -4937,9 +5038,6 @@ function renderRRGChart() {
       }
     }
   });
-  
-  // Add quadrant labels
-  addQuadrantLabels(ctx, canvas);
 }
 
 // Add quadrant labels to the chart
@@ -5771,6 +5869,10 @@ async function triggerManualUpdate() {
   
   try {
     await realTimeDataFetcher.manualUpdate();
+    
+    // Also update Crypto Fear and Greed Index
+    await fetchCryptoFearGreedIndex();
+    
     showUpdateMessage('실시간 데이터가 업데이트되었습니다.', 'success');
     updateDataStatusIndicator('success');
   } catch (error) {

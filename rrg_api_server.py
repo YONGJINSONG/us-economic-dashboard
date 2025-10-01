@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 RRG (Relative Rotation Graph) API Server
 yfinance를 사용하여 실시간 ETF 데이터를 수집하고 RRG를 계산합니다.
 """
+
+import sys
+import io
+# Windows 인코딩 문제 해결
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 import pandas as pd
 import numpy as np
@@ -229,6 +236,78 @@ class RRGCalculator:
         
         print(f"RRG 데이터 계산 완료: {len(rrg_data)}개 섹터")
         return rrg_data
+    
+    def calculate_rrg_timeline_data(self, period_days=252):
+        """RRG 타임라인 데이터 계산 (화살표 표시용)"""
+        print(f"RRG 타임라인 데이터 계산 시작 (기간: {period_days}일)")
+        
+        # 데이터 수집
+        spy_data, sector_data = self.get_data(period_days)
+        if spy_data is None or not sector_data:
+            return None
+        
+        timeline_data = {}
+        
+        # 타임라인 포인트 수 결정 (기간에 따라)
+        if period_days <= 21:
+            num_points = 3
+        elif period_days <= 63:
+            num_points = 4
+        else:
+            num_points = 5
+        
+        for symbol in self.sector_symbols:
+            if symbol not in sector_data:
+                continue
+                
+            try:
+                timeline = []
+                
+                # 기간을 나누어 여러 시점의 데이터 계산
+                for i in range(num_points):
+                    # 각 시점의 기간 계산
+                    point_period = period_days * (i + 1) // num_points
+                    
+                    # 상대 강도 계산
+                    rs = self.calculate_relative_strength(sector_data[symbol], spy_data, point_period)
+                    if rs is None:
+                        continue
+                    
+                    # 모멘텀 계산
+                    momentum = self.calculate_momentum(sector_data[symbol], spy_data, point_period)
+                    if momentum is None:
+                        continue
+                    
+                    # RRG 좌표 계산
+                    x, y = self.calculate_rrg_coordinates(rs, momentum)
+                    if x is None or y is None:
+                        continue
+                    
+                    # 날짜 계산 (오늘부터 역순으로)
+                    days_ago = period_days - point_period
+                    date = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
+                    
+                    timeline.append({
+                        'date': date,
+                        'x': round(x, 4),
+                        'y': round(y, 4),
+                        'rsr': round(x + 100, 4),  # RSR = x + 100
+                        'rsm': round(y + 100, 4)   # RSM = y + 100
+                    })
+                
+                if timeline:
+                    timeline_data[symbol] = {
+                        'name': self.sector_names[symbol],
+                        'timeline': timeline
+                    }
+                    print(f"✓ {symbol} 타임라인 생성: {len(timeline)} 포인트")
+                    
+            except Exception as e:
+                print(f"✗ {symbol} 타임라인 계산 실패: {e}")
+                continue
+        
+        print(f"RRG 타임라인 데이터 계산 완료: {len(timeline_data)}개 섹터")
+        return timeline_data
 
 # RRG 계산기 인스턴스 생성
 rrg_calculator = RRGCalculator()
@@ -282,6 +361,48 @@ def get_status():
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     })
 
+@app.route('/api/rrg/timeline', methods=['GET'])
+def generate_rrg_timeline():
+    """RRG 타임라인 데이터 생성 API (화살표 표시용)"""
+    try:
+        # URL 파라미터에서 기간 가져오기
+        period = request.args.get('period', 252, type=int)
+        
+        # 유효한 기간인지 확인
+        valid_periods = [5, 21, 63, 126, 252]
+        if period not in valid_periods:
+            return jsonify({
+                'error': f'Invalid period. Valid periods: {valid_periods}',
+                'status': 'error'
+            }), 400
+        
+        print(f"API 요청: RRG 타임라인 데이터 생성 (기간: {period}일)")
+        
+        # RRG 타임라인 데이터 계산
+        timeline_data = rrg_calculator.calculate_rrg_timeline_data(period)
+        
+        if timeline_data is None or len(timeline_data) == 0:
+            return jsonify({
+                'error': 'Failed to generate RRG timeline data',
+                'status': 'error'
+            }), 500
+        
+        return jsonify({
+            'data': timeline_data,
+            'period': period,
+            'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'status': 'success'
+        })
+        
+    except Exception as e:
+        print(f"API 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 500
+
 @app.route('/api/rrg/sectors', methods=['GET'])
 def get_sectors():
     """지원하는 섹터 목록 반환"""
@@ -295,9 +416,10 @@ if __name__ == '__main__':
     print("🚀 RRG API Server 시작 중...")
     print("📊 yfinance를 사용하여 실시간 ETF 데이터 수집")
     print("🌐 API 엔드포인트:")
-    print("   - GET /api/rrg/generate?period=252")
+    print("   - GET /api/rrg/generate?period=63")
+    print("   - GET /api/rrg/timeline?period=63")
     print("   - GET /api/rrg/status")
     print("   - GET /api/rrg/sectors")
     print("=" * 50)
     
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=True)
