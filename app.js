@@ -5041,7 +5041,41 @@ function renderRRGChart() {
           ctx.lineWidth = 1.8;  // 60% of 3 = 1.8
           ctx.setLineDash([]); // Solid line for arrows
           
-          // timeline의 모든 포인트를 연결하여 화살표 그리기
+          // 시작점을 네모로 표시 (rrg_blog.py와 동일)
+          const firstPoint = timeline[0];
+          const firstX = xScale.getPixelForValue(firstPoint.x);
+          const firstY = yScale.getPixelForValue(firstPoint.y);
+          const quadrant = chartData.quadrant || '';
+          let bgColor = color;
+          if (quadrant.includes('Leading') || quadrant.includes('선도')) bgColor = 'rgba(0, 255, 0, 0.6)';
+          else if (quadrant.includes('Improving') || quadrant.includes('개선')) bgColor = 'rgba(0, 0, 255, 0.6)';
+          else if (quadrant.includes('Lagging') || quadrant.includes('지연')) bgColor = 'rgba(255, 0, 0, 0.6)';
+          else if (quadrant.includes('Weakening') || quadrant.includes('약화')) bgColor = 'rgba(255, 255, 0, 0.6)';
+          
+          ctx.fillStyle = bgColor;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          const rectSize = 8;
+          ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
+          ctx.strokeRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
+          
+          // 중간 포인트들을 작은 점으로 표시 (rrg_blog.py와 동일)
+          if (timeline.length > 2) {
+            ctx.fillStyle = color;
+            for (let i = 1; i < timeline.length - 1; i++) {
+              const midPoint = timeline[i];
+              const midX = xScale.getPixelForValue(midPoint.x);
+              const midY = yScale.getPixelForValue(midPoint.y);
+              ctx.beginPath();
+              ctx.arc(midX, midY, 3, 0, 2 * Math.PI);
+              ctx.fill();
+            }
+          }
+          
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1.8;
+          
+          // timeline의 모든 포인트를 연결하여 화살표 그리기 (rrg_blog.py와 동일)
           for (let i = 1; i < timeline.length; i++) {
             const prevPoint = timeline[i - 1];
             const currPoint = timeline[i];
@@ -5050,39 +5084,34 @@ function renderRRGChart() {
             const y1 = yScale.getPixelForValue(prevPoint.y);
             const x2 = xScale.getPixelForValue(currPoint.x);
             const y2 = yScale.getPixelForValue(currPoint.y);
-              
-              // Draw line
-              ctx.beginPath();
-              ctx.moveTo(x1, y1);
-              ctx.lineTo(x2, y2);
-              ctx.stroke();
-              
-            // Draw arrow head (마지막 세그먼트에만)
-            if (i === timeline.length - 1) {
-              const angle = Math.atan2(y2 - y1, x2 - x1);
-              
-              // 화살표 길이를 차트 크기에 비례하도록 계산
-              // 차트 너비의 2%를 화살표 길이로 설정
-              const chartWidth = chart.chartArea.right - chart.chartArea.left;
-              const arrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
-              const arrowAngle = Math.PI / 6; // 화살표 각도 (30도)
-              
-              // 화살표 머리를 채워진 삼각형으로 그리기
-              ctx.fillStyle = color;
-              ctx.beginPath();
-              ctx.moveTo(x2, y2);
-              ctx.lineTo(
-                x2 - arrowLength * Math.cos(angle - arrowAngle),
-                y2 - arrowLength * Math.sin(angle - arrowAngle)
-              );
-              ctx.lineTo(
-                x2 - arrowLength * Math.cos(angle + arrowAngle),
-                y2 - arrowLength * Math.sin(angle + arrowAngle)
-              );
-              ctx.closePath();
-              ctx.fill();
-              ctx.stroke();
-            }
+            
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            // 화살표 길이를 차트 크기에 비례하도록 계산
+            const chartWidth = chart.chartArea.right - chart.chartArea.left;
+            const arrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
+            const arrowAngle = Math.PI / 6; // 화살표 각도 (30도)
+            
+            // 연결선 그리기
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // 모든 세그먼트에 화살표 그리기 (rrg_blog.py와 동일)
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(
+              x2 - arrowLength * Math.cos(angle - arrowAngle),
+              y2 - arrowLength * Math.sin(angle - arrowAngle)
+            );
+            ctx.lineTo(
+              x2 - arrowLength * Math.cos(angle + arrowAngle),
+              y2 - arrowLength * Math.sin(angle + arrowAngle)
+            );
+            ctx.closePath();
+            ctx.fill();
           }
           
           colorIndex++;
