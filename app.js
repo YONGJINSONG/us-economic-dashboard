@@ -2765,7 +2765,7 @@ function initializeFedRateChartWithRetry() {
       if (retryCount < maxRetries) {
         showRetryMessage();
         setTimeout(attemptInitialization, 3000);
-      } else {
+                } else {
         console.log('모든 재시도 실패, fallback 차트 표시');
         showFallbackChart();
       }
@@ -4734,6 +4734,12 @@ async function loadRRGTimelineData(period = 63) {
 function generateFallbackTimelineData(period) {
   console.log(`🔄 Generating FALLBACK timeline data for ${period} days`);
   
+  // rrgData가 없으면 빈 객체 반환
+  if (!rrgData || Object.keys(rrgData).length === 0) {
+    console.error('❌ No RRG data available for timeline generation');
+    return {};
+  }
+  
   const sectors = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLU', 'XLV', 'XLY', 'XLRE'];
   const sectorNames = {
     'XLB': 'Materials', 'XLC': 'Communication Services', 'XLE': 'Energy',
@@ -4807,19 +4813,31 @@ async function initializeRRG() {
   
   try {
     const data = await loadRRGData(63); // Default period (3 months)
-    const timelineData = await loadRRGTimelineData(63); // Load timeline data for arrows
     
     if (data) {
+      // 먼저 전역 rrgData 설정 (타임라인 생성에 필요)
       rrgData = data;
+      console.log('✅ RRG data set globally:', Object.keys(rrgData).length, 'sectors');
+      
+      // 이제 타임라인 데이터 로드 (rrgData가 설정된 후)
+      const timelineData = await loadRRGTimelineData(63); // Load timeline data for arrows
+      
       // Use timeline data if available, otherwise generate fallback
       window.rrgTimelineData = timelineData || generateFallbackTimelineData(63);
-      renderRRGChart();
-      renderRRGTable();
-      console.log('RRG initialized successfully with real data');
-      if (timelineData) {
-        console.log('✅ RRG timeline data loaded for arrows');
+      
+      // 타임라인 데이터 확인
+      if (window.rrgTimelineData && Object.keys(window.rrgTimelineData).length > 0) {
+        console.log('✅ Timeline data ready:', Object.keys(window.rrgTimelineData).length, 'sectors');
+        renderRRGChart();
+        renderRRGTable();
+        console.log('RRG initialized successfully with real data');
+        if (timelineData) {
+          console.log('✅ RRG timeline data loaded for arrows');
+        } else {
+          console.log('⚠️ RRG timeline data not available, using fallback');
+        }
       } else {
-        console.log('⚠️ RRG timeline data not available, using fallback');
+        console.error('❌ Failed to generate timeline data, cannot render RRG chart');
       }
     } else {
       console.warn('No RRG data available, using fallback');
@@ -4827,13 +4845,19 @@ async function initializeRRG() {
     }
   } catch (error) {
     console.error('Error initializing RRG:', error);
+    console.error('Error details:', error.message, error.stack);
   }
 }
 
 // Render RRG Chart using Chart.js
 function renderRRGChart() {
   const canvas = document.getElementById('rrgChart');
-  if (!canvas || !rrgData) return;
+  if (!canvas || !rrgData) {
+    console.error('❌ Cannot render RRG chart: canvas or rrgData missing', { canvas: !!canvas, rrgData: !!rrgData });
+    return;
+  }
+  
+  console.log('🎨 Rendering RRG chart with', Object.keys(rrgData).length, 'sectors');
   
   const ctx = canvas.getContext('2d');
   
@@ -4913,7 +4937,7 @@ function renderRRGChart() {
             continue;
           }
           
-          const color = colors[colorIndex % colors.length];
+            const color = colors[colorIndex % colors.length];
           const timeline = timelineEntry.timeline;
           
           // 타임라인의 마지막 포인트를 차트 데이터의 실제 위치로 보정
@@ -4941,13 +4965,13 @@ function renderRRGChart() {
             const y1 = yScale.getPixelForValue(prevPoint.y);
             const x2 = xScale.getPixelForValue(currPoint.x);
             const y2 = yScale.getPixelForValue(currPoint.y);
-            
-            // Draw line
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            
+              
+              // Draw line
+              ctx.beginPath();
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+              
             // Draw arrow head (마지막 세그먼트에만)
             if (i === timeline.length - 1) {
               const angle = Math.atan2(y2 - y1, x2 - x1);
