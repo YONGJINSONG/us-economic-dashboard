@@ -4777,9 +4777,9 @@ function generateFallbackTimelineData(period) {
       const x = currentX - movementX * (1 - progress);
       const y = currentY - movementY * (1 - progress);
       
-      // 차트 범위 내로 제한 (x: 96-104, y: 96-106)
+      // 차트 범위 내로 제한 (x: 96-104, y: 96-104)
       const clampedX = Math.max(96, Math.min(104, x));
-      const clampedY = Math.max(96, Math.min(106, y));
+      const clampedY = Math.max(96, Math.min(104, y));
       
       const date = new Date();
       date.setDate(date.getDate() - (numPoints - 1 - i) * Math.floor(period / numPoints));
@@ -5075,8 +5075,8 @@ function renderRRGChart() {
         y: {
           type: 'linear',
           position: 'left',
-          min: 96,   // rrg_blog.py 방식: 100 중심 (101±4)
-          max: 106,  // RSM은 101을 중심으로 정규화됨
+          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위
+          max: 104,  // RSM도 100을 중심으로 정규화됨
           title: {
             display: true,
             text: 'Relative Strength Momentum (RSM)',
