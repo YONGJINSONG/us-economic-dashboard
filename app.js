@@ -4915,8 +4915,12 @@ function renderRRGChart() {
             // Draw arrow head (마지막 세그먼트에만)
             if (i === data.timeline.length - 1) {
               const angle = Math.atan2(y2 - y1, x2 - x1);
-              const arrowLength = 15;  // 화살표 길이 증가
-              const arrowAngle = Math.PI / 7; // 화살표 각도를 더 좁게
+              
+              // 화살표 길이를 차트 크기에 비례하도록 계산
+              // 차트 너비의 2%를 화살표 길이로 설정
+              const chartWidth = chart.chartArea.right - chart.chartArea.left;
+              const arrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
+              const arrowAngle = Math.PI / 6; // 화살표 각도 (30도)
               
               // 화살표 머리를 채워진 삼각형으로 그리기
               ctx.fillStyle = color;
