@@ -4745,29 +4745,49 @@ function generateFallbackTimelineData(period) {
   const timelineData = {};
   
   for (const symbol of sectors) {
-    // Generate 2-3 timeline points for each sector
-    const numPoints = Math.floor(Math.random() * 2) + 2; // 2 or 3 points
+    // 실제 RRG 데이터에서 현재 위치 가져오기
+    const currentData = rrgData[symbol];
+    if (!currentData) {
+      console.warn(`⚠️ No RRG data for ${symbol}, skipping timeline generation`);
+      continue;
+    }
+    
+    const currentX = currentData.x || currentData.rsr || 100;
+    const currentY = currentData.y || currentData.rsm || 100;
+    
+    // 4-7개의 타임라인 포인트 생성 (현재 위치에서 역방향)
+    const numPoints = Math.floor(Math.random() * 4) + 4; // 4-7 points
     const timeline = [];
     
     for (let i = 0; i < numPoints; i++) {
-      // Generate realistic RRG coordinates around 100
-      const baseX = 100 + (Math.random() - 0.5) * 6; // 97-103 range
-      const baseY = 100 + (Math.random() - 0.5) * 6; // 97-103 range
+      const progress = i / (numPoints - 1); // 0 (과거) to 1 (현재)
       
-      // Add some progression over time
-      const progress = i / (numPoints - 1);
-      const x = baseX + (Math.random() - 0.5) * 2 * progress;
-      const y = baseY + (Math.random() - 0.5) * 2 * progress;
+      // 과거 위치를 현재 위치에서 역산하여 생성
+      // 움직임의 방향과 거리를 결정
+      const movementX = (Math.random() - 0.5) * 3; // -1.5 ~ 1.5 범위의 움직임
+      const movementY = (Math.random() - 0.5) * 3; // -1.5 ~ 1.5 범위의 움직임
+      
+      // 과거일수록 현재 위치에서 더 멀리 떨어진 위치
+      const x = currentX - movementX * (1 - progress);
+      const y = currentY - movementY * (1 - progress);
+      
+      // 차트 범위 내로 제한 (x: 96-104, y: 96-106)
+      const clampedX = Math.max(96, Math.min(104, x));
+      const clampedY = Math.max(96, Math.min(106, y));
       
       const date = new Date();
       date.setDate(date.getDate() - (numPoints - 1 - i) * Math.floor(period / numPoints));
       
       timeline.push({
         date: date.toISOString().split('T')[0],
-        x: parseFloat(x.toFixed(2)),
-        y: parseFloat(y.toFixed(2))
+        x: parseFloat(clampedX.toFixed(4)),
+        y: parseFloat(clampedY.toFixed(4))
       });
     }
+    
+    // 마지막 포인트는 정확히 현재 위치로 설정
+    timeline[timeline.length - 1].x = parseFloat(currentX.toFixed(4));
+    timeline[timeline.length - 1].y = parseFloat(currentY.toFixed(4));
     
     timelineData[symbol] = {
       name: sectorNames[symbol],
@@ -4777,7 +4797,7 @@ function generateFallbackTimelineData(period) {
     };
   }
   
-  console.log('✅ Generated fallback timeline data:', timelineData);
+  console.log('✅ Generated fallback timeline data (matched to current positions):', timelineData);
   return timelineData;
 }
 
