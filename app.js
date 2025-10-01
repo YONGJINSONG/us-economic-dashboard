@@ -4720,9 +4720,22 @@ async function loadRRGTimelineData(period = 63) {
       }
     }
     
-        console.log('⚠️ Timeline API failed, trying to generate fallback timeline data');
-        // Generate fallback timeline data for arrows
-        return generateFallbackTimelineData(period);
+    console.log('⚠️ Timeline API failed, trying to load from JSON file...');
+    
+    // Try to load from JSON file
+    try {
+      const jsonResponse = await fetch('rrg_timeline_data.json');
+      if (jsonResponse.ok) {
+        const timelineData = await jsonResponse.json();
+        console.log('✅ RRG timeline data loaded from JSON file:', Object.keys(timelineData).length, 'sectors');
+        return timelineData;
+      }
+    } catch (jsonError) {
+      console.error('❌ Error loading RRG timeline data from JSON file:', jsonError);
+    }
+    
+    console.log('🔄 Generating fallback timeline data...');
+    return generateFallbackTimelineData(period);
     
   } catch (error) {
     console.error('❌ Error loading RRG timeline data:', error);
@@ -5088,7 +5101,8 @@ function renderRRGChart() {
     plugins: [centerLinesAndArrowsPlugin],
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
+      aspectRatio: 1,  // 정사각형 (1:1 비율)
       plugins: {
         title: {
           display: true,
