@@ -323,24 +323,42 @@ class RRGCalculator:
                         rsm = 101 + (rsr_roc - rsm_rolling_mean) / rsm_rolling_std
                         rsm = rsm.dropna()
                         
-                        # 타임라인 포인트 생성 (등간격으로 선택)
+                        # 타임라인 포인트 생성 (등간격으로 선택) - 현재 데이터와 일치하도록 수정
                         if len(rsr) >= num_points and len(rsm) >= num_points:
-                            step = len(rsr) // num_points
-                            for i in range(num_points):
-                                idx = i * step
-                                if idx < len(rsr) and idx < len(rsm):
-                                    # 날짜 계산
-                                    date_idx = rsr.index[idx]
-                                    date_str = date_idx.strftime('%Y-%m-%d')
-                                    
-                                    timeline.append({
-                                        'date': date_str,
-                                        'x': round(float(rsr.iloc[idx]), 4),
-                                        'y': round(float(rsm.iloc[idx]), 4),
-                                        'rsr': round(float(rsr.iloc[idx]), 4),
-                                        'rsm': round(float(rsm.iloc[idx]), 4),
-                                        'relative_strength': round(float(rs.iloc[idx]), 4)
-                                    })
+                            # 마지막 포인트는 현재 데이터와 정확히 일치해야 함
+                            # 현재 데이터 계산
+                            current_rsr, current_rsm, current_rs = self.calculate_rrg_metrics(etf_data, benchmark_data, period_days)
+                            
+                            if current_rsr is not None and current_rsm is not None and current_rs is not None:
+                                # 마지막 포인트를 현재 데이터로 설정
+                                timeline.append({
+                                    'date': datetime.now().strftime('%Y-%m-%d'),
+                                    'x': round(float(current_rsr), 4),
+                                    'y': round(float(current_rsm), 4),
+                                    'rsr': round(float(current_rsr), 4),
+                                    'rsm': round(float(current_rsm), 4),
+                                    'relative_strength': round(float(current_rs), 4)
+                                })
+                                
+                                # 나머지 포인트들을 등간격으로 선택 (마지막 포인트 제외)
+                                remaining_points = num_points - 1
+                                if remaining_points > 0 and len(rsr) > remaining_points:
+                                    step = len(rsr) // (remaining_points + 1)
+                                    for i in range(remaining_points):
+                                        idx = (i + 1) * step
+                                        if idx < len(rsr) and idx < len(rsm):
+                                            # 날짜 계산
+                                            date_idx = rsr.index[idx]
+                                            date_str = date_idx.strftime('%Y-%m-%d')
+                                            
+                                            timeline.insert(i, {
+                                                'date': date_str,
+                                                'x': round(float(rsr.iloc[idx]), 4),
+                                                'y': round(float(rsm.iloc[idx]), 4),
+                                                'rsr': round(float(rsr.iloc[idx]), 4),
+                                                'rsm': round(float(rsm.iloc[idx]), 4),
+                                                'relative_strength': round(float(rs.iloc[idx]), 4)
+                                            })
                 
                 if timeline:
                     timeline_data[symbol] = {
