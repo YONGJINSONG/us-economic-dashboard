@@ -5065,17 +5065,62 @@ function renderRRGChart() {
             for (let i = 1; i < timeline.length - 1; i++) {
               const midPoint = timeline[i];
               const midX = xScale.getPixelForValue(midPoint.x);
-              const midY = yScale.getPixelForValue(midPoint.y);
+              const midY = xScale.getPixelForValue(midPoint.y);
+              
+              // 급격한 변화 감지 (이전/다음 포인트와의 거리)
+              let isSharpChange = false;
+              if (i > 0 && i < timeline.length - 1) {
+                const prevPoint = timeline[i - 1];
+                const nextPoint = timeline[i + 1];
+                const prevDistance = Math.sqrt(
+                  Math.pow(midPoint.x - prevPoint.x, 2) + Math.pow(midPoint.y - prevPoint.y, 2)
+                );
+                const nextDistance = Math.sqrt(
+                  Math.pow(nextPoint.x - midPoint.x, 2) + Math.pow(nextPoint.y - midPoint.y, 2)
+                );
+                isSharpChange = prevDistance > 1.5 || nextDistance > 1.5;
+              }
+              
+              // 급격한 변화 포인트는 더 큰 원으로 표시
+              const radius = isSharpChange ? 5 : 3;
               ctx.beginPath();
-              ctx.arc(midX, midY, 3, 0, 2 * Math.PI);
+              ctx.arc(midX, midY, radius, 0, 2 * Math.PI);
               ctx.fill();
+              
+              // 급격한 변화 포인트는 테두리 추가
+              if (isSharpChange) {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+              }
             }
           }
+          
+          // 끝점을 큰 원으로 강조 표시
+          if (timeline.length > 0) {
+            const lastPoint = timeline[timeline.length - 1];
+            const lastX = xScale.getPixelForValue(lastPoint.x);
+            const lastY = xScale.getPixelForValue(lastPoint.y);
+            
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+          }
+          
+          // 트레일 배경에 그림자 효과 추가 (가시성 향상)
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+          ctx.shadowBlur = 3;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
           
           ctx.strokeStyle = color;
           ctx.lineWidth = 1.8;
           
-          // timeline의 모든 포인트를 연결하여 화살표 그리기 (rrg_blog.py와 동일)
+          // timeline의 모든 포인트를 연결하여 화살표 그리기 (개선된 버전)
           for (let i = 1; i < timeline.length; i++) {
             const prevPoint = timeline[i - 1];
             const currPoint = timeline[i];
@@ -5087,18 +5132,24 @@ function renderRRGChart() {
             
             const angle = Math.atan2(y2 - y1, x2 - x1);
             
-            // 화살표 길이를 차트 크기에 비례하도록 계산
+            // 세그먼트 길이 계산 (급격한 변화 감지용)
+            const segmentLength = Math.sqrt(Math.pow(currPoint.x - prevPoint.x, 2) + Math.pow(currPoint.y - prevPoint.y, 2));
+            const isSharpChange = segmentLength > 1.5;
+            
+            // 화살표 길이를 동적으로 조정 (급격한 변화 시 더 크게)
             const chartWidth = chart.chartArea.right - chart.chartArea.left;
-            const arrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
+            const baseArrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
+            const arrowLength = isSharpChange ? baseArrowLength * 1.5 : baseArrowLength;
             const arrowAngle = Math.PI / 6; // 화살표 각도 (30도)
             
-            // 연결선 그리기
+            // 연결선 그리기 (급격한 변화 시 더 두껍게)
+            ctx.lineWidth = isSharpChange ? 2.5 : 1.8;
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
             
-            // 모든 세그먼트에 화살표 그리기 (rrg_blog.py와 동일)
+            // 모든 세그먼트에 화살표 그리기
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.moveTo(x2, y2);
@@ -5112,7 +5163,20 @@ function renderRRGChart() {
             );
             ctx.closePath();
             ctx.fill();
+            
+            // 급격한 변화 세그먼트는 화살표 테두리 추가
+            if (isSharpChange) {
+              ctx.strokeStyle = '#000';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
           }
+          
+          // 그림자 효과 리셋
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
           
           colorIndex++;
         }
