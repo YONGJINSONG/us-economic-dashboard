@@ -4896,12 +4896,12 @@ function renderRRGChart() {
       }],
       backgroundColor: colors[colorIndex % colors.length],
       borderColor: colors[colorIndex % colors.length],
-      borderWidth: 2,
-      pointRadius: 8,
-      pointHoverRadius: 10,
-      pointHoverBackgroundColor: colors[colorIndex % colors.length],
-      pointHoverBorderColor: '#000',
-      pointHoverBorderWidth: 2
+      borderWidth: 0,  // 테두리 비활성화
+      pointRadius: 0,  // 기본 점 비활성화 (커스텀 플러그인에서 렌더링)
+      pointHoverRadius: 0,  // 호버 점 비활성화
+      pointHoverBackgroundColor: 'transparent',
+      pointHoverBorderColor: 'transparent',
+      pointHoverBorderWidth: 0
     });
     colorIndex++;
   }
@@ -5053,17 +5053,25 @@ function renderRRGChart() {
             
             // 픽셀 좌표 유효성 검사
             if (!isNaN(firstX) && !isNaN(firstY)) {
-              const quadrant = chartData.quadrant || '';
+              // rrg_blog.py 방식: 시작점의 사분면에 따른 색상 결정
+              const firstRsr = firstPoint.x;
+              const firstRsm = firstPoint.y;
               let bgColor = color;
-              if (quadrant.includes('Leading') || quadrant.includes('선도')) bgColor = 'rgba(0, 255, 0, 0.6)';
-              else if (quadrant.includes('Improving') || quadrant.includes('개선')) bgColor = 'rgba(0, 0, 255, 0.6)';
-              else if (quadrant.includes('Lagging') || quadrant.includes('지연')) bgColor = 'rgba(255, 0, 0, 0.6)';
-              else if (quadrant.includes('Weakening') || quadrant.includes('약화')) bgColor = 'rgba(255, 255, 0, 0.6)';
+              
+              if (firstRsr > 100 && firstRsm > 100) {
+                bgColor = 'rgba(0, 255, 0, 0.8)'; // Leading - 녹색
+              } else if (firstRsr <= 100 && firstRsm > 100) {
+                bgColor = 'rgba(0, 0, 255, 0.8)'; // Improving - 파란색
+              } else if (firstRsr > 100 && firstRsm <= 100) {
+                bgColor = 'rgba(255, 255, 0, 0.8)'; // Weakening - 노란색
+              } else {
+                bgColor = 'rgba(255, 0, 0, 0.8)'; // Lagging - 빨간색
+              }
               
               ctx.fillStyle = bgColor;
               ctx.strokeStyle = color;
               ctx.lineWidth = 2;
-              const rectSize = 8;
+              const rectSize = 10; // rrg_blog.py와 동일한 크기
               ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
               ctx.strokeRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
             } else {
@@ -5075,7 +5083,7 @@ function renderRRGChart() {
           
           // 중간 포인트들을 작은 점으로 표시 (rrg_blog.py와 동일)
           if (timeline.length > 2) {
-            ctx.fillStyle = color;
+            ctx.fillStyle = color; // ticker 고유 색상 사용
             for (let i = 1; i < timeline.length - 1; i++) {
               const midPoint = timeline[i];
               
@@ -5095,36 +5103,15 @@ function renderRRGChart() {
                 continue;
               }
               
-              // 급격한 변화 감지 (이전/다음 포인트와의 거리)
-              let isSharpChange = false;
-              if (i > 0 && i < timeline.length - 1) {
-                const prevPoint = timeline[i - 1];
-                const nextPoint = timeline[i + 1];
-                const prevDistance = Math.sqrt(
-                  Math.pow(midPoint.x - prevPoint.x, 2) + Math.pow(midPoint.y - prevPoint.y, 2)
-                );
-                const nextDistance = Math.sqrt(
-                  Math.pow(nextPoint.x - midPoint.x, 2) + Math.pow(nextPoint.y - midPoint.y, 2)
-                );
-                isSharpChange = prevDistance > 1.5 || nextDistance > 1.5;
-              }
-              
-              // 급격한 변화 포인트는 더 큰 원으로 표시
-              const radius = isSharpChange ? 5 : 3;
+              // rrg_blog.py 방식: 작은 원으로 표시 (s=20에 해당)
+              const radius = 3; // 작은 크기
               ctx.beginPath();
               ctx.arc(midX, midY, radius, 0, 2 * Math.PI);
               ctx.fill();
-              
-              // 급격한 변화 포인트는 테두리 추가
-              if (isSharpChange) {
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-              }
             }
           }
           
-          // 끝점을 큰 원으로 강조 표시
+          // 끝점을 큰 원으로 강조 표시 (rrg_blog.py와 동일)
           if (timeline.length > 0) {
             const lastPoint = timeline[timeline.length - 1];
             
@@ -5137,11 +5124,27 @@ function renderRRGChart() {
               
               // 픽셀 좌표 유효성 검사
               if (!isNaN(lastX) && !isNaN(lastY)) {
-                ctx.fillStyle = color;
-                ctx.strokeStyle = '#000';
+                // rrg_blog.py 방식: 끝점의 사분면에 따른 색상 결정
+                const lastRsr = lastPoint.x;
+                const lastRsm = lastPoint.y;
+                let bgColor = color;
+                
+                if (lastRsr > 100 && lastRsm > 100) {
+                  bgColor = 'rgba(0, 255, 0, 0.8)'; // Leading - 녹색
+                } else if (lastRsr <= 100 && lastRsm > 100) {
+                  bgColor = 'rgba(0, 0, 255, 0.8)'; // Improving - 파란색
+                } else if (lastRsr > 100 && lastRsm <= 100) {
+                  bgColor = 'rgba(255, 255, 0, 0.8)'; // Weakening - 노란색
+                } else {
+                  bgColor = 'rgba(255, 0, 0, 0.8)'; // Lagging - 빨간색
+                }
+                
+                ctx.fillStyle = bgColor;
+                ctx.strokeStyle = color;
                 ctx.lineWidth = 2;
+                const radius = 8; // rrg_blog.py와 동일한 크기 (s=100에 해당)
                 ctx.beginPath();
-                ctx.arc(lastX, lastY, 6, 0, 2 * Math.PI);
+                ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
               } else {
@@ -5152,16 +5155,12 @@ function renderRRGChart() {
             }
           }
           
-          // 트레일 배경에 그림자 효과 추가 (가시성 향상)
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-          ctx.shadowBlur = 3;
-          ctx.shadowOffsetX = 1;
-          ctx.shadowOffsetY = 1;
-          
+          // rrg_blog.py 방식: 연결선 그리기 (ticker 고유 색상 사용)
           ctx.strokeStyle = color;
-          ctx.lineWidth = 1.8;
+          ctx.lineWidth = 2; // rrg_blog.py의 linewidth=2와 동일
+          ctx.setLineDash([]); // 실선
           
-          // timeline의 모든 포인트를 연결하여 화살표 그리기 (개선된 버전)
+          // timeline의 모든 포인트를 연결하여 선 그리기
           for (let i = 1; i < timeline.length; i++) {
             const prevPoint = timeline[i - 1];
             const currPoint = timeline[i];
@@ -5186,27 +5185,43 @@ function renderRRGChart() {
               continue;
             }
             
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            
-            // 세그먼트 길이 계산 (급격한 변화 감지용)
-            const segmentLength = Math.sqrt(Math.pow(currPoint.x - prevPoint.x, 2) + Math.pow(currPoint.y - prevPoint.y, 2));
-            const isSharpChange = segmentLength > 1.5;
-            
-            // 화살표 길이를 동적으로 조정 (급격한 변화 시 더 크게)
-            const chartWidth = chart.chartArea.right - chart.chartArea.left;
-            const baseArrowLength = Math.max(8, Math.min(12, chartWidth * 0.02));
-            const arrowLength = isSharpChange ? baseArrowLength * 1.5 : baseArrowLength;
-            const arrowAngle = Math.PI / 6; // 화살표 각도 (30도)
-            
-            // 연결선 그리기 (급격한 변화 시 더 두껍게)
-            ctx.lineWidth = isSharpChange ? 2.5 : 1.8;
+            // 연결선 그리기
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
+          }
+          
+          // rrg_blog.py 방식: 각 세그먼트에 화살표 그리기
+          for (let i = 1; i < timeline.length; i++) {
+            const prevPoint = timeline[i - 1];
+            const currPoint = timeline[i];
             
-            // 모든 세그먼트에 화살표 그리기
-            ctx.fillStyle = color;
+            // 좌표 유효성 검사
+            if (typeof prevPoint.x !== 'number' || typeof prevPoint.y !== 'number' || 
+                typeof currPoint.x !== 'number' || typeof currPoint.y !== 'number' ||
+                isNaN(prevPoint.x) || isNaN(prevPoint.y) || 
+                isNaN(currPoint.x) || isNaN(currPoint.y)) {
+              continue;
+            }
+            
+            const x1 = xScale.getPixelForValue(prevPoint.x);
+            const y1 = yScale.getPixelForValue(prevPoint.y);
+            const x2 = xScale.getPixelForValue(currPoint.x);
+            const y2 = yScale.getPixelForValue(currPoint.y);
+            
+            // 픽셀 좌표 유효성 검사
+            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
+              continue;
+            }
+            
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            // 화살표 그리기 (rrg_blog.py의 plt.annotate와 동일)
+            const arrowLength = 8; // 고정 크기
+            const arrowAngle = Math.PI / 6; // 30도
+            
+            ctx.fillStyle = color; // ticker 고유 색상
             ctx.beginPath();
             ctx.moveTo(x2, y2);
             ctx.lineTo(
@@ -5219,20 +5234,7 @@ function renderRRGChart() {
             );
             ctx.closePath();
             ctx.fill();
-            
-            // 급격한 변화 세그먼트는 화살표 테두리 추가
-            if (isSharpChange) {
-              ctx.strokeStyle = '#000';
-              ctx.lineWidth = 1;
-              ctx.stroke();
-            }
           }
-          
-          // 그림자 효과 리셋
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
           
           colorIndex++;
         }
