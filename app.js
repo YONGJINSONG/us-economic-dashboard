@@ -3683,7 +3683,47 @@ async function fetchMarketFearGreedIndex() {
     const currentDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
     
     const fearGreedApis = [
-      // CNN Fear & Greed Index - CORS proxy versions (most reliable)
+      // CNN Fear & Greed Index - CORS proxy versions (most reliable first)
+      {
+        name: 'CNN CORS Proxy (CORS Proxy)',
+        url: `https://corsproxy.io/?${encodeURIComponent(`https://production.dataviz.cnn.io/index/fearandgreed/graphdata/${currentDate}`)}`,
+        parser: (data) => {
+          try {
+            if (data && data.fear_and_greed && data.fear_and_greed.score) {
+              return parseInt(data.fear_and_greed.score);
+            }
+            if (data && data.score) {
+              return parseInt(data.score);
+            }
+            if (data && data.fear_and_greed_historical && data.fear_and_greed_historical.data && data.fear_and_greed_historical.data.length > 0) {
+              return parseInt(data.fear_and_greed_historical.data[0].score);
+            }
+          } catch (e) {
+            console.error('Error parsing CNN Fear & Greed data:', e);
+          }
+          return null;
+        }
+      },
+      {
+        name: 'CNN CORS Proxy (CORS Bridge)',
+        url: `https://cors.bridged.cc/https://production.dataviz.cnn.io/index/fearandgreed/graphdata/${currentDate}`,
+        parser: (data) => {
+          try {
+            if (data && data.fear_and_greed && data.fear_and_greed.score) {
+              return parseInt(data.fear_and_greed.score);
+            }
+            if (data && data.score) {
+              return parseInt(data.score);
+            }
+            if (data && data.fear_and_greed_historical && data.fear_and_greed_historical.data && data.fear_and_greed_historical.data.length > 0) {
+              return parseInt(data.fear_and_greed_historical.data[0].score);
+            }
+          } catch (e) {
+            console.error('Error parsing CNN Fear & Greed data:', e);
+          }
+          return null;
+        }
+      },
       {
         name: 'CNN CORS Proxy (AllOrigins)',
         url: `https://api.allorigins.win/get?url=${encodeURIComponent(`https://production.dataviz.cnn.io/index/fearandgreed/graphdata/${currentDate}`)}`,
@@ -3705,55 +3745,28 @@ async function fetchMarketFearGreedIndex() {
           return null;
         }
       },
-      {
-        name: 'CNN CORS Proxy (CORS Anywhere)',
-        url: `https://cors-anywhere.herokuapp.com/https://production.dataviz.cnn.io/index/fearandgreed/graphdata/${currentDate}`,
-        parser: (data) => {
-          try {
-            if (data && data.fear_and_greed && data.fear_and_greed.score) {
-              return parseInt(data.fear_and_greed.score);
-            }
-            if (data && data.score) {
-              return parseInt(data.score);
-            }
-            if (data && data.fear_and_greed_historical && data.fear_and_greed_historical.data && data.fear_and_greed_historical.data.length > 0) {
-              return parseInt(data.fear_and_greed_historical.data[0].score);
-            }
-          } catch (e) {
-            console.error('Error parsing CNN Fear & Greed data:', e);
-          }
-          return null;
-        }
-      },
-      {
-        name: 'CNN CORS Proxy (CORS Proxy)',
-        url: `https://corsproxy.io/?${encodeURIComponent(`https://production.dataviz.cnn.io/index/fearandgreed/graphdata/${currentDate}`)}`,
-        parser: (data) => {
-          try {
-            if (data && data.fear_and_greed && data.fear_and_greed.score) {
-              return parseInt(data.fear_and_greed.score);
-            }
-            if (data && data.score) {
-              return parseInt(data.score);
-            }
-            if (data && data.fear_and_greed_historical && data.fear_and_greed_historical.data && data.fear_and_greed_historical.data.length > 0) {
-              return parseInt(data.fear_and_greed_historical.data[0].score);
-            }
-          } catch (e) {
-            console.error('Error parsing CNN Fear & Greed data:', e);
-          }
-          return null;
-        }
-      },
       // Alternative.me API with CORS proxy
       {
         name: 'Alternative.me CORS Proxy',
-        url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.alternative.me/fng/?limit=1'),
+        url: 'https://corsproxy.io/?https://api.alternative.me/fng/?limit=1',
         parser: (data) => {
           try {
-            const contents = JSON.parse(data.contents);
-            if (contents.data && contents.data.length > 0) {
-              return parseInt(contents.data[0].value);
+            if (data && data.data && data.data.length > 0) {
+              return parseInt(data.data[0].value);
+            }
+          } catch (e) {
+            console.error('Error parsing Alternative Fear & Greed data:', e);
+          }
+          return null;
+        }
+      },
+      {
+        name: 'Alternative.me CORS Bridge',
+        url: 'https://cors.bridged.cc/https://api.alternative.me/fng/?limit=1',
+        parser: (data) => {
+          try {
+            if (data && data.data && data.data.length > 0) {
+              return parseInt(data.data[0].value);
             }
           } catch (e) {
             console.error('Error parsing Alternative Fear & Greed data:', e);
@@ -3894,14 +3907,35 @@ async function fetchCryptoFearGreedIndex() {
     
     // Try multiple approaches to bypass CSP issues with more reliable proxies
     const approaches = [
-      // Approach 1: CORS Anywhere (most reliable)
+      // Approach 1: CORS Proxy (most reliable)
       {
-        name: 'CORS Anywhere',
-        url: 'https://cors-anywhere.herokuapp.com/https://api.alternative.me/fng/',
+        name: 'CORS Proxy',
+        url: 'https://corsproxy.io/?https://api.alternative.me/fng/',
         parser: (data) => data,
-        timeout: 10000
+        timeout: 8000
       },
-      // Approach 2: AllOrigins (backup)
+      // Approach 2: CORS Bridge (backup)
+      {
+        name: 'CORS Bridge',
+        url: 'https://cors.bridged.cc/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 8000
+      },
+      // Approach 3: Thing Proxy
+      {
+        name: 'Thing Proxy',
+        url: 'https://thingproxy.freeboard.io/fetch/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 8000
+      },
+      // Approach 4: CORS EU
+      {
+        name: 'CORS EU',
+        url: 'https://cors.eu.org/https://api.alternative.me/fng/',
+        parser: (data) => data,
+        timeout: 8000
+      },
+      // Approach 5: AllOrigins (less reliable, moved down)
       {
         name: 'AllOrigins',
         url: 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.alternative.me/fng/'),
@@ -3913,37 +3947,9 @@ async function fetchCryptoFearGreedIndex() {
             return null;
           }
         },
-        timeout: 10000
+        timeout: 8000
       },
-      // Approach 3: CORS Proxy (alternative)
-      {
-        name: 'CORS Proxy',
-        url: 'https://corsproxy.io/?https://api.alternative.me/fng/',
-        parser: (data) => data,
-        timeout: 10000
-      },
-      // Approach 4: Thing Proxy
-      {
-        name: 'Thing Proxy',
-        url: 'https://thingproxy.freeboard.io/fetch/https://api.alternative.me/fng/',
-        parser: (data) => data,
-        timeout: 10000
-      },
-      // Approach 5: CORS Bridge
-      {
-        name: 'CORS Bridge',
-        url: 'https://cors.bridged.cc/https://api.alternative.me/fng/',
-        parser: (data) => data,
-        timeout: 10000
-      },
-      // Approach 6: CORS EU
-      {
-        name: 'CORS EU',
-        url: 'https://cors.eu.org/https://api.alternative.me/fng/',
-        parser: (data) => data,
-        timeout: 10000
-      },
-      // Approach 7: YACDN
+      // Approach 6: YACDN
       {
         name: 'YACDN',
         url: 'https://yacdn.org/proxy/https://api.alternative.me/fng/',
