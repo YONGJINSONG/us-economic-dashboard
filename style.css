@@ -2454,54 +2454,6 @@ select.form-control {
   align-items: stretch;
 }
 
-.current-vix-display {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.vix-card {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
-  color: var(--color-white);
-  padding: var(--space-20);
-  border-radius: var(--radius-lg);
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  min-width: 200px;
-}
-
-.vix-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-4);
-  opacity: 0.9;
-}
-
-.vix-value {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-8);
-  line-height: 1;
-}
-
-.vix-change {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-4);
-}
-
-.vix-change.positive {
-  color: #4ade80; /* Green for positive change */
-}
-
-.vix-change.negative {
-  color: #f87171; /* Red for negative change */
-}
-
-.vix-date {
-  font-size: var(--font-size-xs);
-  opacity: 0.8;
-}
 
 .vix-description {
   background-color: var(--color-background);
@@ -3118,14 +3070,6 @@ select.form-control {
     gap: var(--space-12);
   }
   
-  .vix-card {
-    min-width: auto;
-    padding: var(--space-16);
-  }
-  
-  .vix-value {
-    font-size: 2.5rem;
-  }
   
   .yield-m2-container {
     grid-template-columns: 1fr;
