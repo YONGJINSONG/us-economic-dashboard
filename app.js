@@ -4686,67 +4686,67 @@ function renderRRGChart() {
       
       ctx.save();
       
-      // Draw quadrant backgrounds (rrg_blog.py style)
-      // Lagging (빨강): x < 100, y < 100
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+      // Draw quadrant backgrounds (rrg_blog.py style) - 정확한 좌표 사용
+      // Lagging (빨강): 94-100, 94-100
+      ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
       ctx.fillRect(
-        xScale.getPixelForValue(xScale.min),
+        xScale.getPixelForValue(96),
         yScale.getPixelForValue(100),
-        xScale.getPixelForValue(100) - xScale.getPixelForValue(xScale.min),
-        yScale.getPixelForValue(yScale.min) - yScale.getPixelForValue(100)
+        xScale.getPixelForValue(100) - xScale.getPixelForValue(96),
+        yScale.getPixelForValue(96) - yScale.getPixelForValue(100)
       );
       
-      // Weakening (노랑): x > 100, y < 100
-      ctx.fillStyle = 'rgba(255, 255, 0, 0.1)';
+      // Weakening (노랑): 100-106, 94-100
+      ctx.fillStyle = 'rgba(255, 255, 0, 0.2)';
       ctx.fillRect(
         xScale.getPixelForValue(100),
         yScale.getPixelForValue(100),
-        xScale.getPixelForValue(xScale.max) - xScale.getPixelForValue(100),
-        yScale.getPixelForValue(yScale.min) - yScale.getPixelForValue(100)
+        xScale.getPixelForValue(104) - xScale.getPixelForValue(100),
+        yScale.getPixelForValue(96) - yScale.getPixelForValue(100)
       );
       
-      // Leading (초록): x > 100, y > 100
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+      // Leading (초록): 100-106, 100-106
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
       ctx.fillRect(
         xScale.getPixelForValue(100),
-        yScale.getPixelForValue(yScale.max),
-        xScale.getPixelForValue(xScale.max) - xScale.getPixelForValue(100),
-        yScale.getPixelForValue(100) - yScale.getPixelForValue(yScale.max)
+        yScale.getPixelForValue(100),
+        xScale.getPixelForValue(104) - xScale.getPixelForValue(100),
+        yScale.getPixelForValue(104) - yScale.getPixelForValue(100)
       );
       
-      // Improving (파랑): x < 100, y > 100
-      ctx.fillStyle = 'rgba(0, 0, 255, 0.1)';
+      // Improving (파랑): 94-100, 100-106
+      ctx.fillStyle = 'rgba(0, 0, 255, 0.2)';
       ctx.fillRect(
-        xScale.getPixelForValue(xScale.min),
-        yScale.getPixelForValue(yScale.max),
-        xScale.getPixelForValue(100) - xScale.getPixelForValue(xScale.min),
-        yScale.getPixelForValue(100) - yScale.getPixelForValue(yScale.max)
+        xScale.getPixelForValue(96),
+        yScale.getPixelForValue(100),
+        xScale.getPixelForValue(100) - xScale.getPixelForValue(96),
+        yScale.getPixelForValue(104) - yScale.getPixelForValue(100)
       );
       
-      // Add quadrant labels
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.font = 'bold 16px Arial';
+      // Add quadrant labels (rrg_blog.py style) - 정확한 위치
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      // Improving (좌상단)
-      const improvingX = (xScale.getPixelForValue(xScale.min) + xScale.getPixelForValue(100)) / 2;
-      const improvingY = (yScale.getPixelForValue(yScale.max) + yScale.getPixelForValue(100)) / 2;
+      // Improving (97, 102) - rrg_blog.py와 동일
+      const improvingX = xScale.getPixelForValue(97);
+      const improvingY = yScale.getPixelForValue(102);
       ctx.fillText('Improving', improvingX, improvingY);
       
-      // Leading (우상단)
-      const leadingX = (xScale.getPixelForValue(100) + xScale.getPixelForValue(xScale.max)) / 2;
-      const leadingY = (yScale.getPixelForValue(yScale.max) + yScale.getPixelForValue(100)) / 2;
+      // Leading (102, 102) - rrg_blog.py와 동일
+      const leadingX = xScale.getPixelForValue(102);
+      const leadingY = yScale.getPixelForValue(102);
       ctx.fillText('Leading', leadingX, leadingY);
       
-      // Weakening (우하단)
-      const weakeningX = (xScale.getPixelForValue(100) + xScale.getPixelForValue(xScale.max)) / 2;
-      const weakeningY = (yScale.getPixelForValue(100) + yScale.getPixelForValue(yScale.min)) / 2;
+      // Weakening (102, 98) - rrg_blog.py와 동일
+      const weakeningX = xScale.getPixelForValue(102);
+      const weakeningY = yScale.getPixelForValue(98);
       ctx.fillText('Weakening', weakeningX, weakeningY);
       
-      // Lagging (좌하단)
-      const laggingX = (xScale.getPixelForValue(xScale.min) + xScale.getPixelForValue(100)) / 2;
-      const laggingY = (yScale.getPixelForValue(100) + yScale.getPixelForValue(yScale.min)) / 2;
+      // Lagging (97, 98) - rrg_blog.py와 동일
+      const laggingX = xScale.getPixelForValue(97);
+      const laggingY = yScale.getPixelForValue(98);
       ctx.fillText('Lagging', laggingX, laggingY);
       
       ctx.restore();
@@ -4756,11 +4756,11 @@ function renderRRGChart() {
       const xScale = chart.scales.x;
       const yScale = chart.scales.y;
       
-      // Draw center lines at 100, 100 (RRG 중심점) - 강조된 경계선
+      // Draw center lines at 100, 100 (RRG 중심점) - rrg_blog.py와 동일
       ctx.save();
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([8, 4]); // 더 굵고 명확한 점선
+      ctx.strokeStyle = 'gray';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([5, 5]); // rrg_blog.py와 동일한 점선 스타일
       
       // Horizontal line at y=100 (가로 중심선)
       ctx.beginPath();
@@ -4776,9 +4776,10 @@ function renderRRGChart() {
       
       // Draw timeline trails for each sector if timeline data is available (rrg_blog.py style)
       if (window.rrgTimelineData) {
+        // rrg_blog.py와 동일한 색상 배열
         const colors = [
-          '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
-          '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471'
+          'red', 'blue', 'green', 'orange', 'purple', 
+          'brown', 'pink', 'gray', 'olive', 'cyan', 'magenta'
         ];
         
         // Helper function to get quadrant color (rrg_blog.py style)
