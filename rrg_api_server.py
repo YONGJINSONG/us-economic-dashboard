@@ -116,7 +116,7 @@ class RRGCalculator:
             traceback.print_exc()
             return None
     
-    def calculate_rrg_metrics(self, etf_data, benchmark_data, period=252):
+    def calculate_rrg_metrics(self, etf_data, benchmark_data, period=84):
         """RRG 메트릭 계산 - rrg_blog.py 방식"""
         try:
             # 최근 period일 데이터만 사용
@@ -202,7 +202,7 @@ class RRGCalculator:
         else:
             return "Neutral (중립)"
     
-    def calculate_rrg_data(self, period_days=252):
+    def calculate_rrg_data(self, period_days=84):
         """전체 RRG 데이터 계산"""
         print(f"RRG 데이터 계산 시작 (기간: {period_days}일)")
         
@@ -251,7 +251,7 @@ class RRGCalculator:
         print(f"RRG 데이터 계산 완료: {len(rrg_data)}개 섹터")
         return rrg_data
     
-    def calculate_rrg_timeline_data(self, period_days=252):
+    def calculate_rrg_timeline_data(self, period_days=84):
         """RRG 타임라인 데이터 계산 (화살표 표시용) - rrg_blog.py 방식"""
         print(f"RRG 타임라인 데이터 계산 시작 (기간: {period_days}일)")
         
@@ -262,13 +262,8 @@ class RRGCalculator:
         
         timeline_data = {}
         
-        # 타임라인 포인트 수 결정 (기간에 따라)
-        if period_days <= 21:
-            num_points = 3
-        elif period_days <= 63:
-            num_points = 4
-        else:
-            num_points = 5
+        # 타임라인 포인트 수 결정 (기간에 따라) - 7개 포인트로 고정
+        num_points = 7
         
         for symbol in self.sector_symbols:
             if symbol not in sector_data:
@@ -388,10 +383,10 @@ def generate_rrg_data():
     """RRG 데이터 생성 API"""
     try:
         # URL 파라미터에서 기간 가져오기
-        period = request.args.get('period', 252, type=int)
+        period = request.args.get('period', 84, type=int)
         
         # 유효한 기간인지 확인
-        valid_periods = [5, 21, 63, 126, 252]
+        valid_periods = [5, 21, 63, 84, 126, 252]
         if period not in valid_periods:
             return jsonify({
                 'error': f'Invalid period. Valid periods: {valid_periods}',
@@ -437,10 +432,10 @@ def generate_rrg_timeline():
     """RRG 타임라인 데이터 생성 API (화살표 표시용)"""
     try:
         # URL 파라미터에서 기간 가져오기
-        period = request.args.get('period', 252, type=int)
+        period = request.args.get('period', 84, type=int)
         
         # 유효한 기간인지 확인
-        valid_periods = [5, 21, 63, 126, 252]
+        valid_periods = [5, 21, 63, 84, 126, 252]
         if period not in valid_periods:
             return jsonify({
                 'error': f'Invalid period. Valid periods: {valid_periods}',
@@ -487,8 +482,8 @@ if __name__ == '__main__':
     print("🚀 RRG API Server 시작 중...")
     print("📊 yfinance를 사용하여 실시간 ETF 데이터 수집")
     print("🌐 API 엔드포인트:")
-    print("   - GET /api/rrg/generate?period=63")
-    print("   - GET /api/rrg/timeline?period=63")
+    print("   - GET /api/rrg/generate?period=84")
+    print("   - GET /api/rrg/timeline?period=84")
     print("   - GET /api/rrg/status")
     print("   - GET /api/rrg/sectors")
     print("=" * 50)

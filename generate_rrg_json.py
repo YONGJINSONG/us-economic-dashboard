@@ -33,10 +33,10 @@ import json
 warnings.filterwarnings("ignore")
 
 tickers = ['XLB', 'XLC', 'XLE', 'XLF', 'XLI', 'XLK', 'XLP', 'XLU', 'XLV', 'XLY', 'XLRE']
-days_before = 360
+days_before = 84  # 12주 (84일)
 from_date = datetime.datetime.today() - datetime.timedelta(days=days_before)
 to_date = datetime.datetime.today()
-period = 5
+period = 1  # 1일 간격 (84일 데이터를 모두 사용)
 
 # 섹터 이름 매핑
 sector_names = {
@@ -80,7 +80,7 @@ filtered_data_for_bm = latest_data_for_bm.iloc[::period]
 benchmark_data = filtered_data_for_bm.iloc[::-1]
 
 window = 14  # Z-Score 계산할 주기
-tail = 7  # 그래프에 표시할 기간(최근 몇주)
+tail = 7  # 그래프에 표시할 기간(최근 7개 포인트)
 
 rs_tickers = []
 rsr_tickers = []
