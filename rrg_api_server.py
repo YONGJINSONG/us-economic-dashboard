@@ -105,7 +105,8 @@ class RRGCalculator:
                 benchmark_close = benchmark_recent['Close']
             
             # rrg_blog.py 방식: RS = 100 * (ETF 가격 / 벤치마크 가격)
-            relative_strength = 100 * (etf_close.iloc[-1] / benchmark_close.iloc[-1])
+            # 전체 시리즈에 대해 계산 (단일 값이 아닌)
+            relative_strength = 100 * (etf_close / benchmark_close)
             
             return relative_strength
             
@@ -115,8 +116,8 @@ class RRGCalculator:
             traceback.print_exc()
             return None
     
-    def calculate_momentum(self, etf_data, benchmark_data, period=252):
-        """상대 강도 모멘텀 계산 - rrg_blog.py 방식"""
+    def calculate_rrg_metrics(self, etf_data, benchmark_data, period=252):
+        """RRG 메트릭 계산 - rrg_blog.py 방식"""
         try:
             # 최근 period일 데이터만 사용
             etf_recent = etf_data.tail(period)
@@ -133,10 +134,10 @@ class RRGCalculator:
             # rrg_blog.py 방식: RSR과 RSM 계산
             window = 14  # rrg_blog.py와 동일한 윈도우 크기
             
-            # RS 계산
+            # RS 계산 (Relative Strength)
             rs = 100 * (etf_close / benchmark_close)
             
-            # RSR 계산 (rolling window 사용)
+            # RSR 계산 (Relative Strength Ratio) - Z-Score 방식
             actual_window = min(window, len(rs) - 1)
             if actual_window < 2:
                 actual_window = 2
@@ -151,12 +152,16 @@ class RRGCalculator:
             rsr = rsr.dropna()
             
             if len(rsr) == 0:
-                return None
+                return None, None, None
             
-            # RSR ROC 계산 (모멘텀)
-            rsr_roc = 100 * ((rsr / rsr.iloc[0]) - 1)
+            # RSR ROC 계산 (Rate of Change) - 모멘텀
+            rsr_roc = 100 * ((rsr / rsr.shift(1)) - 1)
+            rsr_roc = rsr_roc.dropna()
             
-            # RSM 계산
+            if len(rsr_roc) == 0:
+                return rsr.iloc[-1], None, rs.iloc[-1]
+            
+            # RSM 계산 (Relative Strength Momentum) - RSR ROC의 Z-Score
             rsm_actual_window = min(window, len(rsr_roc) - 1)
             if rsm_actual_window < 2:
                 rsm_actual_window = 2
@@ -167,34 +172,21 @@ class RRGCalculator:
             # 표준편차가 0인 경우를 처리
             rsm_rolling_std = rsm_rolling_std.replace(0, 1)
             
-            rsm = (101 + (rsr_roc - rsm_rolling_mean) / rsm_rolling_std).dropna()
+            rsm = 101 + (rsr_roc - rsm_rolling_mean) / rsm_rolling_std
+            rsm = rsm.dropna()
             
             if len(rsm) == 0:
-                return None
+                return rsr.iloc[-1], None, rs.iloc[-1]
             
-            # 최신 RSM 값 반환
-            return rsm.iloc[-1]
+            # 최신 값들 반환 (RSR, RSM, RS)
+            return rsr.iloc[-1], rsm.iloc[-1], rs.iloc[-1]
             
         except Exception as e:
-            print(f"모멘텀 계산 오류: {e}")
+            print(f"RRG 메트릭 계산 오류: {e}")
             import traceback
             traceback.print_exc()
-            return None
+            return None, None, None
     
-    def calculate_rrg_coordinates(self, relative_strength, momentum):
-        """RRG 좌표 계산 - rrg_blog.py 방식"""
-        try:
-            # rrg_blog.py 방식: RSR과 RSM을 직접 사용
-            # X축: RSR (Relative Strength Ratio)
-            # Y축: RSM (Relative Strength Momentum)
-            x = relative_strength  # RSR 값 그대로 사용
-            y = momentum           # RSM 값 그대로 사용
-            
-            return x, y
-            
-        except Exception as e:
-            print(f"RRG 좌표 계산 오류: {e}")
-            return None, None
     
     def determine_quadrant(self, x, y):
         """사분면 결정 - rrg_blog.py 방식"""
@@ -225,39 +217,35 @@ class RRGCalculator:
         for symbol in self.sector_symbols:
             if symbol in sector_data:
                 try:
-                    # RSR 계산 (상대 강도 비율)
-                    rsr = self.calculate_relative_strength(sector_data[symbol], spy_data, period_days)
-                    if rsr is None:
-                        continue
-                    
-                    # RSM 계산 (상대 강도 모멘텀)
-                    rsm = self.calculate_momentum(sector_data[symbol], spy_data, period_days)
-                    if rsm is None:
-                        continue
-                    
-                    # RRG 좌표 계산
-                    x, y = self.calculate_rrg_coordinates(rsr, rsm)
-                    if x is None or y is None:
+                    # RRG 메트릭 계산 (RSR, RSM, RS)
+                    rsr, rsm, rs = self.calculate_rrg_metrics(sector_data[symbol], spy_data, period_days)
+                    if rsr is None or rsm is None or rs is None:
+                        print(f"✗ {symbol}: 메트릭 계산 실패")
                         continue
                     
                     # 사분면 결정
-                    quadrant = self.determine_quadrant(x, y)
+                    quadrant = self.determine_quadrant(rsr, rsm)
                     
                     # 데이터 저장
                     rrg_data[symbol] = {
                         "name": self.sector_names[symbol],
-                        "x": round(x, 4),
-                        "y": round(y, 4),
-                        "relative_strength": round(rsr, 4),
+                        "x": round(rsr, 4),
+                        "y": round(rsm, 4),
+                        "rsr": round(rsr, 4),
+                        "rsm": round(rsm, 4),
+                        "relative_strength": round(rs, 4),
                         "momentum": round(rsm, 4),
                         "date": current_date,
-                        "quadrant": quadrant
+                        "quadrant": quadrant,
+                        "calculation_method": "rrg_blog.py"
                     }
                     
-                    print(f"✓ {symbol} ({self.sector_names[symbol]}): RSR={rsr:.4f}, RSM={rsm:.4f}, Quadrant={quadrant}")
+                    print(f"✓ {symbol} ({self.sector_names[symbol]}): RSR={rsr:.4f}, RSM={rsm:.4f}, RS={rs:.4f}, Quadrant={quadrant}")
                     
                 except Exception as e:
                     print(f"✗ {symbol} 계산 실패: {e}")
+                    import traceback
+                    traceback.print_exc()
                     continue
         
         print(f"RRG 데이터 계산 완료: {len(rrg_data)}개 섹터")
@@ -294,19 +282,9 @@ class RRGCalculator:
                     # 각 시점의 기간 계산
                     point_period = period_days * (i + 1) // num_points
                     
-                    # 상대 강도 계산
-                    rs = self.calculate_relative_strength(sector_data[symbol], spy_data, point_period)
-                    if rs is None:
-                        continue
-                    
-                    # 모멘텀 계산
-                    momentum = self.calculate_momentum(sector_data[symbol], spy_data, point_period)
-                    if momentum is None:
-                        continue
-                    
-                    # RRG 좌표 계산
-                    x, y = self.calculate_rrg_coordinates(rs, momentum)
-                    if x is None or y is None:
+                    # RRG 메트릭 계산
+                    rsr, rsm, rs = self.calculate_rrg_metrics(sector_data[symbol], spy_data, point_period)
+                    if rsr is None or rsm is None or rs is None:
                         continue
                     
                     # 날짜 계산 (오늘부터 역순으로)
@@ -315,21 +293,25 @@ class RRGCalculator:
                     
                     timeline.append({
                         'date': date,
-                        'x': round(x, 4),
-                        'y': round(y, 4),
-                        'rsr': round(x + 100, 4),  # RSR = x + 100
-                        'rsm': round(y + 100, 4)   # RSM = y + 100
+                        'x': round(rsr, 4),
+                        'y': round(rsm, 4),
+                        'rsr': round(rsr, 4),
+                        'rsm': round(rsm, 4),
+                        'relative_strength': round(rs, 4)
                     })
                 
                 if timeline:
                     timeline_data[symbol] = {
                         'name': self.sector_names[symbol],
-                        'timeline': timeline
+                        'timeline': timeline,
+                        'current': timeline[-1] if timeline else None
                     }
                     print(f"✓ {symbol} 타임라인 생성: {len(timeline)} 포인트")
                     
             except Exception as e:
                 print(f"✗ {symbol} 타임라인 계산 실패: {e}")
+                import traceback
+                traceback.print_exc()
                 continue
         
         print(f"RRG 타임라인 데이터 계산 완료: {len(timeline_data)}개 섹터")

@@ -4702,12 +4702,37 @@ function renderRRGChart() {
       ctx.lineTo(xScale.getPixelForValue(100), yScale.getPixelForValue(yScale.max));
       ctx.stroke();
       
-      // Draw arrows for each sector if timeline data is available
+      // Draw timeline trails for each sector if timeline data is available (rrg_blog.py style)
       if (window.rrgTimelineData) {
         const colors = [
           '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
           '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471'
         ];
+        
+        // Helper function to get quadrant color (rrg_blog.py style)
+        function getQuadrantColor(x, y) {
+          if (x < 100 && y < 100) return 'red';      // Lagging
+          else if (x > 100 && y > 100) return 'green'; // Leading  
+          else if (x < 100 && y > 100) return 'blue';  // Improving
+          else if (x > 100 && y < 100) return 'yellow'; // Weakening
+          else return 'gray';
+        }
+        
+        // Helper function to draw arrows
+        function drawArrow(ctx, fromX, fromY, toX, toY, color, lineWidth) {
+          const headlen = 8;
+          const angle = Math.atan2(toY - fromY, toX - fromX);
+          
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lineWidth;
+          ctx.beginPath();
+          ctx.moveTo(fromX, fromY);
+          ctx.lineTo(toX, toY);
+          ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+          ctx.moveTo(toX, toY);
+          ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+          ctx.stroke();
+        }
         
         // rrgData의 순서를 따라 타임라인을 그려서 색상 일치 보장
         let colorIndex = 0;
@@ -4720,190 +4745,82 @@ function renderRRGChart() {
             continue;
           }
           
-            const color = colors[colorIndex % colors.length];
+          const tickerColor = colors[colorIndex % colors.length];
           const timeline = timelineEntry.timeline;
           
-          // 타임라인의 마지막 포인트를 차트 데이터의 실제 위치로 보정
-          const lastPoint = timeline[timeline.length - 1];
-          const originalX = lastPoint.x;
-          const originalY = lastPoint.y;
-          lastPoint.x = chartData.x;
-          lastPoint.y = chartData.y;
-          
-          // 디버깅: 타임라인 마지막 포인트와 차트 포인트 일치 확인
-          if (Math.abs(originalX - chartData.x) > 0.1 || Math.abs(originalY - chartData.y) > 0.1) {
-            console.log(`⚠️ ${symbol}: Timeline adjusted from (${originalX.toFixed(2)}, ${originalY.toFixed(2)}) to (${chartData.x.toFixed(2)}, ${chartData.y.toFixed(2)})`);
-          }
-          
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 1.8;  // 60% of 3 = 1.8
-          ctx.setLineDash([]); // Solid line for arrows
-          
-          // 시작점을 네모로 표시 (rrg_blog.py와 동일) - 심볼 고유 색상 사용
+          // rrg_blog.py 방식: 시작점을 네모로 표시 (상태 색깔 사용)
           const firstPoint = timeline[0];
           
-          // 좌표 유효성 검사
-          if (typeof firstPoint.x === 'number' && typeof firstPoint.y === 'number' && 
-              !isNaN(firstPoint.x) && !isNaN(firstPoint.y)) {
-            
-            const firstX = xScale.getPixelForValue(firstPoint.x);
-            const firstY = yScale.getPixelForValue(firstPoint.y);
-            
-            // 픽셀 좌표 유효성 검사
-            if (!isNaN(firstX) && !isNaN(firstY)) {
-              // rrg_blog.py 방식: 시작점은 심볼 고유 색상으로 네모 표시
-              ctx.fillStyle = color; // 심볼 고유 색상 사용
-              ctx.strokeStyle = '#333';
-              ctx.lineWidth = 2;
-              const rectSize = 10; // rrg_blog.py와 동일한 크기
-              ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
-              ctx.strokeRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
-            } else {
-              console.warn(`Invalid pixel coordinates for ${symbol} first point:`, {firstX, firstY});
-            }
-          } else {
-            console.warn(`Invalid coordinates for ${symbol} first point:`, firstPoint);
-          }
+          // 시작점 좌표 계산
+          const startX = xScale.getPixelForValue(firstPoint.x);
+          const startY = yScale.getPixelForValue(firstPoint.y);
           
-          // 중간 포인트들을 작은 점으로 표시 (rrg_blog.py와 동일)
+          // 시작점을 네모로 표시 (rrg_blog.py와 동일)
+          ctx.fillStyle = getQuadrantColor(firstPoint.x, firstPoint.y);
+          ctx.fillRect(startX - 4, startY - 4, 8, 8);
+          
+          // 시작점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일)
+          ctx.fillStyle = 'gray';
+          ctx.font = '10px Arial';
+          ctx.fillText(symbol, startX + 8, startY + 4);
+          
+          // 중간 데이터 포인트들을 작은 크기로 산점도 표시 (rrg_blog.py와 동일)
           if (timeline.length > 2) {
-            ctx.fillStyle = color; // ticker 고유 색상 사용
+            ctx.fillStyle = tickerColor;
             for (let i = 1; i < timeline.length - 1; i++) {
-              const midPoint = timeline[i];
-              
-              // 좌표 유효성 검사
-              if (typeof midPoint.x !== 'number' || typeof midPoint.y !== 'number' || 
-                  isNaN(midPoint.x) || isNaN(midPoint.y)) {
-                console.warn(`Invalid coordinates for ${symbol} timeline point ${i}:`, midPoint);
-                continue;
-              }
-              
-              const midX = xScale.getPixelForValue(midPoint.x);
-              const midY = yScale.getPixelForValue(midPoint.y);
-              
-              // 픽셀 좌표 유효성 검사
-              if (isNaN(midX) || isNaN(midY)) {
-                console.warn(`Invalid pixel coordinates for ${symbol} timeline point ${i}:`, {midX, midY});
-                continue;
-              }
-              
-              // rrg_blog.py 방식: 작은 원으로 표시 (s=20에 해당)
-              const radius = 3; // 작은 크기
+              const point = timeline[i];
+              const pointX = xScale.getPixelForValue(point.x);
+              const pointY = yScale.getPixelForValue(point.y);
               ctx.beginPath();
-              ctx.arc(midX, midY, radius, 0, 2 * Math.PI);
+              ctx.arc(pointX, pointY, 2, 0, 2 * Math.PI);
               ctx.fill();
             }
           }
           
-          // 끝점을 큰 원으로 강조 표시 (rrg_blog.py와 동일)
-          if (timeline.length > 0) {
-            const lastPoint = timeline[timeline.length - 1];
+          // 마지막 데이터 포인트는 크게 표시 (상태 색깔 사용) - rrg_blog.py와 동일
+          const endX = xScale.getPixelForValue(chartData.x);
+          const endY = yScale.getPixelForValue(chartData.y);
+          ctx.fillStyle = getQuadrantColor(chartData.x, chartData.y);
+          ctx.beginPath();
+          ctx.arc(endX, endY, 6, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          // 마지막 데이터 지점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일)
+          ctx.fillStyle = 'black';
+          ctx.font = '12px Arial';
+          ctx.fillText(symbol, endX + 8, endY + 4);
+          
+          // 연결선 그리기 (ticker 고유 색깔 사용) - rrg_blog.py와 동일
+          ctx.strokeStyle = tickerColor;
+          ctx.lineWidth = 2;
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          
+          for (let i = 0; i < timeline.length; i++) {
+            const point = timeline[i];
+            const pointX = xScale.getPixelForValue(point.x);
+            const pointY = yScale.getPixelForValue(point.y);
             
-            // 좌표 유효성 검사
-            if (typeof lastPoint.x === 'number' && typeof lastPoint.y === 'number' && 
-                !isNaN(lastPoint.x) && !isNaN(lastPoint.y)) {
-              
-              const lastX = xScale.getPixelForValue(lastPoint.x);
-              const lastY = yScale.getPixelForValue(lastPoint.y);
-              
-              // 픽셀 좌표 유효성 검사
-              if (!isNaN(lastX) && !isNaN(lastY)) {
-                // rrg_blog.py 방식: 끝점은 심볼 고유 색상으로 큰 원 표시
-                ctx.fillStyle = color; // 심볼 고유 색상 사용
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                const radius = 8; // rrg_blog.py와 동일한 크기 (s=100에 해당)
-                ctx.beginPath();
-                ctx.arc(lastX, lastY, radius, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.stroke();
-              } else {
-                console.warn(`Invalid pixel coordinates for ${symbol} last point:`, {lastX, lastY});
-              }
+            if (i === 0) {
+              ctx.moveTo(pointX, pointY);
             } else {
-              console.warn(`Invalid coordinates for ${symbol} last point:`, lastPoint);
+              ctx.lineTo(pointX, pointY);
             }
           }
+          ctx.stroke();
           
-          // rrg_blog.py 방식: 연결선 그리기 (ticker 고유 색상 사용)
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2; // rrg_blog.py의 linewidth=2와 동일
-          ctx.setLineDash([]); // 실선
-          
-          // timeline의 모든 포인트를 연결하여 선 그리기
-          for (let i = 1; i < timeline.length; i++) {
-            const prevPoint = timeline[i - 1];
-            const currPoint = timeline[i];
+          // 각 종목의 마지막 데이터 지점에 화살표 추가 (ticker 고유 색깔 사용) - rrg_blog.py와 동일
+          for (let j = 1; j < timeline.length; j++) {
+            const prevPoint = timeline[j - 1];
+            const currPoint = timeline[j];
             
-            // 좌표 유효성 검사
-            if (typeof prevPoint.x !== 'number' || typeof prevPoint.y !== 'number' || 
-                typeof currPoint.x !== 'number' || typeof currPoint.y !== 'number' ||
-                isNaN(prevPoint.x) || isNaN(prevPoint.y) || 
-                isNaN(currPoint.x) || isNaN(currPoint.y)) {
-              console.warn(`Invalid coordinates for ${symbol} timeline segment ${i}:`, {prevPoint, currPoint});
-              continue;
-            }
+            const prevX = xScale.getPixelForValue(prevPoint.x);
+            const prevY = yScale.getPixelForValue(prevPoint.y);
+            const currX = xScale.getPixelForValue(currPoint.x);
+            const currY = yScale.getPixelForValue(currPoint.y);
             
-            const x1 = xScale.getPixelForValue(prevPoint.x);
-            const y1 = yScale.getPixelForValue(prevPoint.y);
-            const x2 = xScale.getPixelForValue(currPoint.x);
-            const y2 = yScale.getPixelForValue(currPoint.y);
-            
-            // 픽셀 좌표 유효성 검사
-            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-              console.warn(`Invalid pixel coordinates for ${symbol} timeline segment ${i}:`, {x1, y1, x2, y2});
-              continue;
-            }
-            
-            // 연결선 그리기
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-          }
-          
-          // rrg_blog.py 방식: 각 세그먼트에 화살표 그리기
-          for (let i = 1; i < timeline.length; i++) {
-            const prevPoint = timeline[i - 1];
-            const currPoint = timeline[i];
-            
-            // 좌표 유효성 검사
-            if (typeof prevPoint.x !== 'number' || typeof prevPoint.y !== 'number' || 
-                typeof currPoint.x !== 'number' || typeof currPoint.y !== 'number' ||
-                isNaN(prevPoint.x) || isNaN(prevPoint.y) || 
-                isNaN(currPoint.x) || isNaN(currPoint.y)) {
-              continue;
-            }
-            
-            const x1 = xScale.getPixelForValue(prevPoint.x);
-            const y1 = yScale.getPixelForValue(prevPoint.y);
-            const x2 = xScale.getPixelForValue(currPoint.x);
-            const y2 = yScale.getPixelForValue(currPoint.y);
-            
-            // 픽셀 좌표 유효성 검사
-            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
-              continue;
-            }
-            
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            
-            // 화살표 그리기 (rrg_blog.py의 plt.annotate와 동일)
-            const arrowLength = 8; // 고정 크기
-            const arrowAngle = Math.PI / 6; // 30도
-            
-            ctx.fillStyle = color; // ticker 고유 색상
-            ctx.beginPath();
-            ctx.moveTo(x2, y2);
-            ctx.lineTo(
-              x2 - arrowLength * Math.cos(angle - arrowAngle),
-              y2 - arrowLength * Math.sin(angle - arrowAngle)
-            );
-            ctx.lineTo(
-              x2 - arrowLength * Math.cos(angle + arrowAngle),
-              y2 - arrowLength * Math.sin(angle + arrowAngle)
-            );
-            ctx.closePath();
-            ctx.fill();
+            // 화살표 그리기
+            drawArrow(ctx, prevX, prevY, currX, currY, tickerColor, 2);
           }
           
           colorIndex++;
@@ -5032,15 +4949,7 @@ function renderRRGChart() {
           borderWidth: 1
         },
         legend: {
-          display: true,
-          position: 'right',
-          labels: {
-            usePointStyle: true,
-            padding: 20,
-            font: {
-              size: 12
-            }
-          }
+          display: false  // 티커 심볼 설명 부분 제거
         }
       }
     }
