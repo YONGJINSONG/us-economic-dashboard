@@ -90,7 +90,7 @@ class RRGCalculator:
             return None, None
     
     def calculate_relative_strength(self, etf_data, benchmark_data, period=252):
-        """상대 강도 계산"""
+        """상대 강도 계산 - rrg_blog.py 방식"""
         try:
             # 최근 period일 데이터만 사용
             etf_recent = etf_data.tail(period)
@@ -104,8 +104,8 @@ class RRGCalculator:
                 etf_close = etf_recent['Close']
                 benchmark_close = benchmark_recent['Close']
             
-            # 상대 강도 = (ETF 가격 / 벤치마크 가격) * 100
-            relative_strength = (etf_close.iloc[-1] / benchmark_close.iloc[-1]) * 100
+            # rrg_blog.py 방식: RS = 100 * (ETF 가격 / 벤치마크 가격)
+            relative_strength = 100 * (etf_close.iloc[-1] / benchmark_close.iloc[-1])
             
             return relative_strength
             
@@ -116,7 +116,7 @@ class RRGCalculator:
             return None
     
     def calculate_momentum(self, etf_data, benchmark_data, period=252):
-        """상대 강도 모멘텀 계산"""
+        """상대 강도 모멘텀 계산 - rrg_blog.py 방식"""
         try:
             # 최근 period일 데이터만 사용
             etf_recent = etf_data.tail(period)
@@ -130,27 +130,50 @@ class RRGCalculator:
                 etf_close = etf_recent['Close']
                 benchmark_close = benchmark_recent['Close']
             
-            # 현재 상대 강도
-            current_rs = (etf_close.iloc[-1] / benchmark_close.iloc[-1]) * 100
+            # rrg_blog.py 방식: RSR과 RSM 계산
+            window = 14  # rrg_blog.py와 동일한 윈도우 크기
             
-            # 기간에 따른 모멘텀 계산
-            # 짧은 기간일수록 더 적은 일수로 모멘텀 계산
-            if period <= 5:  # 1주일 이하
-                lookback_days = min(2, len(etf_close) - 1)
-            elif period <= 21:  # 1개월 이하
-                lookback_days = min(5, len(etf_close) - 1)
-            elif period <= 63:  # 3개월 이하
-                lookback_days = min(8, len(etf_close) - 1)
-            else:  # 6개월 이상
-                lookback_days = min(12, len(etf_close) - 1)
+            # RS 계산
+            rs = 100 * (etf_close / benchmark_close)
             
-            if len(etf_close) > lookback_days:
-                past_rs = (etf_close.iloc[-lookback_days] / benchmark_close.iloc[-lookback_days]) * 100
-                momentum = current_rs - past_rs
-            else:
-                momentum = 0
+            # RSR 계산 (rolling window 사용)
+            actual_window = min(window, len(rs) - 1)
+            if actual_window < 2:
+                actual_window = 2
             
-            return momentum
+            rolling_mean = rs.rolling(window=actual_window, min_periods=1).mean()
+            rolling_std = rs.rolling(window=actual_window, min_periods=1).std(ddof=0)
+            
+            # 표준편차가 0인 경우를 처리
+            rolling_std = rolling_std.replace(0, 1)
+            
+            rsr = 100 + (rs - rolling_mean) / rolling_std
+            rsr = rsr.dropna()
+            
+            if len(rsr) == 0:
+                return None
+            
+            # RSR ROC 계산 (모멘텀)
+            rsr_roc = 100 * ((rsr / rsr.iloc[0]) - 1)
+            
+            # RSM 계산
+            rsm_actual_window = min(window, len(rsr_roc) - 1)
+            if rsm_actual_window < 2:
+                rsm_actual_window = 2
+            
+            rsm_rolling_mean = rsr_roc.rolling(window=rsm_actual_window, min_periods=1).mean()
+            rsm_rolling_std = rsr_roc.rolling(window=rsm_actual_window, min_periods=1).std(ddof=0)
+            
+            # 표준편차가 0인 경우를 처리
+            rsm_rolling_std = rsm_rolling_std.replace(0, 1)
+            
+            rsm = (101 + (rsr_roc - rsm_rolling_mean) / rsm_rolling_std).dropna()
+            
+            if len(rsm) == 0:
+                return None
+            
+            # 최신 RSM 값 반환
+            return rsm.iloc[-1]
             
         except Exception as e:
             print(f"모멘텀 계산 오류: {e}")
@@ -159,13 +182,13 @@ class RRGCalculator:
             return None
     
     def calculate_rrg_coordinates(self, relative_strength, momentum):
-        """RRG 좌표 계산"""
+        """RRG 좌표 계산 - rrg_blog.py 방식"""
         try:
-            # RRG 좌표 변환
-            # X축: 상대 강도 (100을 기준으로 한 상대적 값)
-            # Y축: 모멘텀 (변화율)
-            x = relative_strength - 100  # X축: 상대 강도 (100 기준)
-            y = momentum                 # Y축: 모멘텀 (변화율)
+            # rrg_blog.py 방식: RSR과 RSM을 직접 사용
+            # X축: RSR (Relative Strength Ratio)
+            # Y축: RSM (Relative Strength Momentum)
+            x = relative_strength  # RSR 값 그대로 사용
+            y = momentum           # RSM 값 그대로 사용
             
             return x, y
             
@@ -174,15 +197,18 @@ class RRGCalculator:
             return None, None
     
     def determine_quadrant(self, x, y):
-        """사분면 결정"""
-        if x >= 0 and y >= 0:
-            return "Leading (강세)"
-        elif x < 0 and y >= 0:
-            return "Weakening (약화)"
-        elif x < 0 and y < 0:
-            return "Improving (개선)"
-        else:  # x >= 0 and y < 0
+        """사분면 결정 - rrg_blog.py 방식"""
+        # rrg_blog.py 방식: 100을 기준으로 사분면 결정
+        if x < 100 and y < 100:
             return "Lagging (약세)"
+        elif x > 100 and y > 100:
+            return "Leading (강세)"
+        elif x < 100 and y > 100:
+            return "Improving (개선)"
+        elif x > 100 and y < 100:
+            return "Weakening (약화)"
+        else:
+            return "Neutral (중립)"
     
     def calculate_rrg_data(self, period_days=252):
         """전체 RRG 데이터 계산"""
@@ -199,18 +225,18 @@ class RRGCalculator:
         for symbol in self.sector_symbols:
             if symbol in sector_data:
                 try:
-                    # 상대 강도 계산
-                    rs = self.calculate_relative_strength(sector_data[symbol], spy_data, period_days)
-                    if rs is None:
+                    # RSR 계산 (상대 강도 비율)
+                    rsr = self.calculate_relative_strength(sector_data[symbol], spy_data, period_days)
+                    if rsr is None:
                         continue
                     
-                    # 모멘텀 계산
-                    momentum = self.calculate_momentum(sector_data[symbol], spy_data, period_days)
-                    if momentum is None:
+                    # RSM 계산 (상대 강도 모멘텀)
+                    rsm = self.calculate_momentum(sector_data[symbol], spy_data, period_days)
+                    if rsm is None:
                         continue
                     
                     # RRG 좌표 계산
-                    x, y = self.calculate_rrg_coordinates(rs, momentum)
+                    x, y = self.calculate_rrg_coordinates(rsr, rsm)
                     if x is None or y is None:
                         continue
                     
@@ -222,13 +248,13 @@ class RRGCalculator:
                         "name": self.sector_names[symbol],
                         "x": round(x, 4),
                         "y": round(y, 4),
-                        "relative_strength": round(rs, 4),
-                        "momentum": round(momentum, 4),
+                        "relative_strength": round(rsr, 4),
+                        "momentum": round(rsm, 4),
                         "date": current_date,
                         "quadrant": quadrant
                     }
                     
-                    print(f"✓ {symbol} ({self.sector_names[symbol]}): RS={rs:.4f}, Momentum={momentum:.4f}, Quadrant={quadrant}")
+                    print(f"✓ {symbol} ({self.sector_names[symbol]}): RSR={rsr:.4f}, RSM={rsm:.4f}, Quadrant={quadrant}")
                     
                 except Exception as e:
                     print(f"✗ {symbol} 계산 실패: {e}")

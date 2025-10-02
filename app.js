@@ -4573,7 +4573,7 @@ function renderRRGChart() {
     window.rrgChartInstance.destroy();
   }
   
-  // Prepare data for Chart.js
+  // Prepare data for Chart.js - rrg_blog.py style with unique colors per symbol
   const datasets = [];
   const colors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
@@ -4590,12 +4590,16 @@ function renderRRGChart() {
       }],
       backgroundColor: colors[colorIndex % colors.length],
       borderColor: colors[colorIndex % colors.length],
-      borderWidth: 0,  // 테두리 비활성화
-      pointRadius: 0,  // 기본 점 비활성화 (커스텀 플러그인에서 렌더링)
-      pointHoverRadius: 0,  // 호버 점 비활성화
-      pointHoverBackgroundColor: 'transparent',
-      pointHoverBorderColor: 'transparent',
-      pointHoverBorderWidth: 0
+      borderWidth: 2,  // 테두리 활성화
+      pointRadius: 8,  // 기본 점 활성화 (호버 기능을 위해)
+      pointHoverRadius: 12,  // 호버 시 더 큰 점
+      pointHoverBackgroundColor: colors[colorIndex % colors.length],
+      pointHoverBorderColor: '#333',
+      pointHoverBorderWidth: 2,
+      // Store symbol info for hover tooltip
+      symbol: symbol,
+      sectorName: data.name,
+      quadrant: data.quadrant
     });
     colorIndex++;
   }
@@ -4735,7 +4739,7 @@ function renderRRGChart() {
           ctx.lineWidth = 1.8;  // 60% of 3 = 1.8
           ctx.setLineDash([]); // Solid line for arrows
           
-          // 시작점을 네모로 표시 (rrg_blog.py와 동일)
+          // 시작점을 네모로 표시 (rrg_blog.py와 동일) - 심볼 고유 색상 사용
           const firstPoint = timeline[0];
           
           // 좌표 유효성 검사
@@ -4747,23 +4751,9 @@ function renderRRGChart() {
             
             // 픽셀 좌표 유효성 검사
             if (!isNaN(firstX) && !isNaN(firstY)) {
-              // rrg_blog.py 방식: 시작점의 사분면에 따른 색상 결정
-              const firstRsr = firstPoint.x;
-              const firstRsm = firstPoint.y;
-              let bgColor = color;
-              
-              if (firstRsr > 100 && firstRsm > 100) {
-                bgColor = 'rgba(0, 255, 0, 0.8)'; // Leading - 녹색
-              } else if (firstRsr <= 100 && firstRsm > 100) {
-                bgColor = 'rgba(0, 0, 255, 0.8)'; // Improving - 파란색
-              } else if (firstRsr > 100 && firstRsm <= 100) {
-                bgColor = 'rgba(255, 255, 0, 0.8)'; // Weakening - 노란색
-              } else {
-                bgColor = 'rgba(255, 0, 0, 0.8)'; // Lagging - 빨간색
-              }
-              
-              ctx.fillStyle = bgColor;
-              ctx.strokeStyle = color;
+              // rrg_blog.py 방식: 시작점은 심볼 고유 색상으로 네모 표시
+              ctx.fillStyle = color; // 심볼 고유 색상 사용
+              ctx.strokeStyle = '#333';
               ctx.lineWidth = 2;
               const rectSize = 10; // rrg_blog.py와 동일한 크기
               ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
@@ -4818,23 +4808,9 @@ function renderRRGChart() {
               
               // 픽셀 좌표 유효성 검사
               if (!isNaN(lastX) && !isNaN(lastY)) {
-                // rrg_blog.py 방식: 끝점의 사분면에 따른 색상 결정
-                const lastRsr = lastPoint.x;
-                const lastRsm = lastPoint.y;
-                let bgColor = color;
-                
-                if (lastRsr > 100 && lastRsm > 100) {
-                  bgColor = 'rgba(0, 255, 0, 0.8)'; // Leading - 녹색
-                } else if (lastRsr <= 100 && lastRsm > 100) {
-                  bgColor = 'rgba(0, 0, 255, 0.8)'; // Improving - 파란색
-                } else if (lastRsr > 100 && lastRsm <= 100) {
-                  bgColor = 'rgba(255, 255, 0, 0.8)'; // Weakening - 노란색
-                } else {
-                  bgColor = 'rgba(255, 0, 0, 0.8)'; // Lagging - 빨간색
-                }
-                
-                ctx.fillStyle = bgColor;
-                ctx.strokeStyle = color;
+                // rrg_blog.py 방식: 끝점은 심볼 고유 색상으로 큰 원 표시
+                ctx.fillStyle = color; // 심볼 고유 색상 사용
+                ctx.strokeStyle = '#333';
                 ctx.lineWidth = 2;
                 const radius = 8; // rrg_blog.py와 동일한 크기 (s=100에 해당)
                 ctx.beginPath();
@@ -5030,6 +5006,42 @@ function renderRRGChart() {
       interaction: {
         intersect: false,
         mode: 'point'
+      },
+      plugins: {
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            title: function(context) {
+              const dataset = context[0].dataset;
+              return `${dataset.symbol} - ${dataset.sectorName}`;
+            },
+            label: function(context) {
+              const dataset = context.dataset;
+              const dataPoint = context.parsed;
+              return [
+                `상태: ${dataset.quadrant}`,
+                `RSR: ${dataPoint.x.toFixed(2)}`,
+                `RSM: ${dataPoint.y.toFixed(2)}`
+              ];
+            }
+          },
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#333',
+          borderWidth: 1
+        },
+        legend: {
+          display: true,
+          position: 'right',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              size: 12
+            }
+          }
+        }
       }
     }
   });
