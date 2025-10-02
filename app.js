@@ -4663,8 +4663,8 @@ function renderRRGChart() {
       backgroundColor: colors[colorIndex % colors.length],
       borderColor: colors[colorIndex % colors.length],
       borderWidth: 2,  // 테두리 활성화
-      pointRadius: 8,  // 기본 점 활성화 (호버 기능을 위해)
-      pointHoverRadius: 12,  // 호버 시 더 큰 점
+      pointRadius: window.innerWidth < 768 ? 10 : 8,  // 모바일에서 더 큰 점
+      pointHoverRadius: window.innerWidth < 768 ? 14 : 12,  // 모바일에서 더 큰 호버 점
       pointHoverBackgroundColor: colors[colorIndex % colors.length],
       pointHoverBorderColor: '#333',
       pointHoverBorderWidth: 2,
@@ -4793,7 +4793,9 @@ function renderRRGChart() {
         
         // Helper function to draw arrows
         function drawArrow(ctx, fromX, fromY, toX, toY, color, lineWidth) {
-          const headlen = 8;
+          // 모바일에서도 잘 보이도록 화살표 크기 조정
+          const isMobile = window.innerWidth < 768;
+          const headlen = isMobile ? 10 : 8;
           const angle = Math.atan2(toY - fromY, toX - fromX);
           
           ctx.strokeStyle = color;
@@ -4832,12 +4834,14 @@ function renderRRGChart() {
           ctx.fillStyle = getQuadrantColor(firstPoint.x, firstPoint.y);
           ctx.fillRect(startX - 4, startY - 4, 8, 8);
           
-          // 시작점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일)
+          // 시작점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일) - 모바일 대응
           ctx.fillStyle = 'gray';
-          ctx.font = '10px Arial';
+          // 모바일에서도 잘 보이도록 폰트 크기 조정
+          const isMobile = window.innerWidth < 768;
+          ctx.font = isMobile ? '8px Arial' : '10px Arial';
           ctx.fillText(symbol, startX + 8, startY + 4);
           
-          // 중간 데이터 포인트들을 작은 크기로 산점도 표시 (rrg_blog.py와 동일)
+          // 중간 데이터 포인트들을 작은 크기로 산점도 표시 (rrg_blog.py와 동일) - 모바일 대응
           if (timeline.length > 2) {
             ctx.fillStyle = tickerColor;
             for (let i = 1; i < timeline.length - 1; i++) {
@@ -4845,27 +4849,33 @@ function renderRRGChart() {
               const pointX = xScale.getPixelForValue(point.x);
               const pointY = yScale.getPixelForValue(point.y);
               ctx.beginPath();
-              ctx.arc(pointX, pointY, 2, 0, 2 * Math.PI);
+              // 모바일에서도 잘 보이도록 점 크기 조정
+              const pointRadius = isMobile ? 3 : 2;
+              ctx.arc(pointX, pointY, pointRadius, 0, 2 * Math.PI);
               ctx.fill();
             }
           }
           
-          // 마지막 데이터 포인트는 크게 표시 (상태 색깔 사용) - rrg_blog.py와 동일
+          // 마지막 데이터 포인트는 크게 표시 (상태 색깔 사용) - rrg_blog.py와 동일 - 모바일 대응
           const endX = xScale.getPixelForValue(chartData.x);
           const endY = yScale.getPixelForValue(chartData.y);
           ctx.fillStyle = getQuadrantColor(chartData.x, chartData.y);
           ctx.beginPath();
-          ctx.arc(endX, endY, 6, 0, 2 * Math.PI);
+          // 모바일에서도 잘 보이도록 점 크기 조정
+          const endPointRadius = isMobile ? 8 : 6;
+          ctx.arc(endX, endY, endPointRadius, 0, 2 * Math.PI);
           ctx.fill();
           
-          // 마지막 데이터 지점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일)
+          // 마지막 데이터 지점에 티커 심볼 레이블 추가 (rrg_blog.py와 동일) - 모바일 대응
           ctx.fillStyle = 'black';
-          ctx.font = '12px Arial';
+          // 모바일에서도 잘 보이도록 폰트 크기 조정
+          ctx.font = isMobile ? '10px Arial' : '12px Arial';
           ctx.fillText(symbol, endX + 8, endY + 4);
           
-          // 연결선 그리기 (ticker 고유 색깔 사용) - rrg_blog.py와 동일
+          // 연결선 그리기 (ticker 고유 색깔 사용) - rrg_blog.py와 동일 - 모바일 대응
           ctx.strokeStyle = tickerColor;
-          ctx.lineWidth = 2;
+          // 모바일에서도 잘 보이도록 선 두께 조정
+          ctx.lineWidth = isMobile ? 3 : 2;
           ctx.setLineDash([]);
           ctx.beginPath();
           
@@ -4892,8 +4902,9 @@ function renderRRGChart() {
             const currX = xScale.getPixelForValue(currPoint.x);
             const currY = yScale.getPixelForValue(currPoint.y);
             
-            // 화살표 그리기
-            drawArrow(ctx, prevX, prevY, currX, currY, tickerColor, 2);
+            // 화살표 그리기 - 모바일 대응
+            const arrowLineWidth = isMobile ? 3 : 2;
+            drawArrow(ctx, prevX, prevY, currX, currY, tickerColor, arrowLineWidth);
           }
           
           colorIndex++;
@@ -4919,7 +4930,7 @@ function renderRRGChart() {
           display: true,
           text: `Relative Rotation Graph - ${new Date().toISOString().split('T')[0]}`,
           font: {
-            size: 16,
+            size: window.innerWidth < 768 ? 14 : 16,
             weight: 'bold'
           }
         },
@@ -4955,7 +4966,7 @@ function renderRRGChart() {
             display: true,
             text: 'Relative Strength Ratio (RSR)',
             font: {
-              size: 14,
+              size: window.innerWidth < 768 ? 12 : 14,
               weight: 'bold'
             }
           },
@@ -4978,7 +4989,7 @@ function renderRRGChart() {
             display: true,
             text: 'Relative Strength Momentum (RSM)',
             font: {
-              size: 14,
+              size: window.innerWidth < 768 ? 12 : 14,
               weight: 'bold'
             }
           },
