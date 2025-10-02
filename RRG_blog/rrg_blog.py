@@ -34,6 +34,8 @@ benchmark = '^SPX'
 tickers_data_daily = yf.download(tickers, start=from_date, end=to_date)
 benchmark_data_daily = yf.download(benchmark, start=from_date, end=to_date)
 
+# 데이터는 최신 날짜까지 자동으로 다운로드됩니다
+
 # MultiIndex인 경우 Close 컬럼 사용
 if isinstance(tickers_data_daily.columns, pd.MultiIndex):
     tickers_data_daily = tickers_data_daily['Close']
