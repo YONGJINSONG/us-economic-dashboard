@@ -252,7 +252,7 @@ class RRGCalculator:
         return rrg_data
     
     def calculate_rrg_timeline_data(self, period_days=252):
-        """RRG 타임라인 데이터 계산 (화살표 표시용)"""
+        """RRG 타임라인 데이터 계산 (화살표 표시용) - rrg_blog.py 방식"""
         print(f"RRG 타임라인 데이터 계산 시작 (기간: {period_days}일)")
         
         # 데이터 수집
@@ -277,28 +277,70 @@ class RRGCalculator:
             try:
                 timeline = []
                 
-                # 기간을 나누어 여러 시점의 데이터 계산
-                for i in range(num_points):
-                    # 각 시점의 기간 계산
-                    point_period = period_days * (i + 1) // num_points
+                # rrg_blog.py 방식: 실제 데이터 포인트들을 사용하여 timeline 생성
+                etf_data = sector_data[symbol]
+                benchmark_data = spy_data
+                
+                # 전체 기간에 대해 RRG 메트릭 계산
+                etf_recent = etf_data.tail(period_days)
+                benchmark_recent = benchmark_data.tail(period_days)
+                
+                if isinstance(etf_recent.columns, pd.MultiIndex):
+                    etf_close = etf_recent[('Close', etf_recent.columns.get_level_values(1)[0])]
+                    benchmark_close = benchmark_recent[('Close', benchmark_recent.columns.get_level_values(1)[0])]
+                else:
+                    etf_close = etf_recent['Close']
+                    benchmark_close = benchmark_recent['Close']
+                
+                # 상대 강도 계산
+                rs = 100 * (etf_close / benchmark_close)
+                
+                # RSR 계산 (Z-score 방식)
+                window = 14
+                actual_window = min(window, len(rs) - 1)
+                if actual_window < 2:
+                    actual_window = 2
+                
+                rolling_mean = rs.rolling(window=actual_window, min_periods=1).mean()
+                rolling_std = rs.rolling(window=actual_window, min_periods=1).std(ddof=0)
+                rolling_std = rolling_std.replace(0, 1)
+                rsr = 100 + (rs - rolling_mean) / rolling_std
+                rsr = rsr.dropna()
+                
+                # RSM 계산
+                if len(rsr) > 1:
+                    rsr_roc = 100 * ((rsr / rsr.shift(1)) - 1)
+                    rsr_roc = rsr_roc.dropna()
                     
-                    # RRG 메트릭 계산
-                    rsr, rsm, rs = self.calculate_rrg_metrics(sector_data[symbol], spy_data, point_period)
-                    if rsr is None or rsm is None or rs is None:
-                        continue
-                    
-                    # 날짜 계산 (오늘부터 역순으로)
-                    days_ago = period_days - point_period
-                    date = (datetime.now() - timedelta(days=days_ago)).strftime('%Y-%m-%d')
-                    
-                    timeline.append({
-                        'date': date,
-                        'x': round(rsr, 4),
-                        'y': round(rsm, 4),
-                        'rsr': round(rsr, 4),
-                        'rsm': round(rsm, 4),
-                        'relative_strength': round(rs, 4)
-                    })
+                    if len(rsr_roc) > 0:
+                        rsm_actual_window = min(window, len(rsr_roc) - 1)
+                        if rsm_actual_window < 2:
+                            rsm_actual_window = 2
+                        
+                        rsm_rolling_mean = rsr_roc.rolling(window=rsm_actual_window, min_periods=1).mean()
+                        rsm_rolling_std = rsr_roc.rolling(window=rsm_actual_window, min_periods=1).std(ddof=0)
+                        rsm_rolling_std = rsm_rolling_std.replace(0, 1)
+                        rsm = 101 + (rsr_roc - rsm_rolling_mean) / rsm_rolling_std
+                        rsm = rsm.dropna()
+                        
+                        # 타임라인 포인트 생성 (등간격으로 선택)
+                        if len(rsr) >= num_points and len(rsm) >= num_points:
+                            step = len(rsr) // num_points
+                            for i in range(num_points):
+                                idx = i * step
+                                if idx < len(rsr) and idx < len(rsm):
+                                    # 날짜 계산
+                                    date_idx = rsr.index[idx]
+                                    date_str = date_idx.strftime('%Y-%m-%d')
+                                    
+                                    timeline.append({
+                                        'date': date_str,
+                                        'x': round(float(rsr.iloc[idx]), 4),
+                                        'y': round(float(rsm.iloc[idx]), 4),
+                                        'rsr': round(float(rsr.iloc[idx]), 4),
+                                        'rsm': round(float(rsm.iloc[idx]), 4),
+                                        'relative_strength': round(float(rs.iloc[idx]), 4)
+                                    })
                 
                 if timeline:
                     timeline_data[symbol] = {
@@ -307,6 +349,8 @@ class RRGCalculator:
                         'current': timeline[-1] if timeline else None
                     }
                     print(f"✓ {symbol} 타임라인 생성: {len(timeline)} 포인트")
+                else:
+                    print(f"⚠️ {symbol} 타임라인 생성 실패: 데이터 부족")
                     
             except Exception as e:
                 print(f"✗ {symbol} 타임라인 계산 실패: {e}")
