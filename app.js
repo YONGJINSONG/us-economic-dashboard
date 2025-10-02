@@ -5043,29 +5043,57 @@ function renderRRGChart() {
           
           // 시작점을 네모로 표시 (rrg_blog.py와 동일)
           const firstPoint = timeline[0];
-          const firstX = xScale.getPixelForValue(firstPoint.x);
-          const firstY = yScale.getPixelForValue(firstPoint.y);
-          const quadrant = chartData.quadrant || '';
-          let bgColor = color;
-          if (quadrant.includes('Leading') || quadrant.includes('선도')) bgColor = 'rgba(0, 255, 0, 0.6)';
-          else if (quadrant.includes('Improving') || quadrant.includes('개선')) bgColor = 'rgba(0, 0, 255, 0.6)';
-          else if (quadrant.includes('Lagging') || quadrant.includes('지연')) bgColor = 'rgba(255, 0, 0, 0.6)';
-          else if (quadrant.includes('Weakening') || quadrant.includes('약화')) bgColor = 'rgba(255, 255, 0, 0.6)';
           
-          ctx.fillStyle = bgColor;
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          const rectSize = 8;
-          ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
-          ctx.strokeRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
+          // 좌표 유효성 검사
+          if (typeof firstPoint.x === 'number' && typeof firstPoint.y === 'number' && 
+              !isNaN(firstPoint.x) && !isNaN(firstPoint.y)) {
+            
+            const firstX = xScale.getPixelForValue(firstPoint.x);
+            const firstY = yScale.getPixelForValue(firstPoint.y);
+            
+            // 픽셀 좌표 유효성 검사
+            if (!isNaN(firstX) && !isNaN(firstY)) {
+              const quadrant = chartData.quadrant || '';
+              let bgColor = color;
+              if (quadrant.includes('Leading') || quadrant.includes('선도')) bgColor = 'rgba(0, 255, 0, 0.6)';
+              else if (quadrant.includes('Improving') || quadrant.includes('개선')) bgColor = 'rgba(0, 0, 255, 0.6)';
+              else if (quadrant.includes('Lagging') || quadrant.includes('지연')) bgColor = 'rgba(255, 0, 0, 0.6)';
+              else if (quadrant.includes('Weakening') || quadrant.includes('약화')) bgColor = 'rgba(255, 255, 0, 0.6)';
+              
+              ctx.fillStyle = bgColor;
+              ctx.strokeStyle = color;
+              ctx.lineWidth = 2;
+              const rectSize = 8;
+              ctx.fillRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
+              ctx.strokeRect(firstX - rectSize/2, firstY - rectSize/2, rectSize, rectSize);
+            } else {
+              console.warn(`Invalid pixel coordinates for ${symbol} first point:`, {firstX, firstY});
+            }
+          } else {
+            console.warn(`Invalid coordinates for ${symbol} first point:`, firstPoint);
+          }
           
           // 중간 포인트들을 작은 점으로 표시 (rrg_blog.py와 동일)
           if (timeline.length > 2) {
             ctx.fillStyle = color;
             for (let i = 1; i < timeline.length - 1; i++) {
               const midPoint = timeline[i];
+              
+              // 좌표 유효성 검사
+              if (typeof midPoint.x !== 'number' || typeof midPoint.y !== 'number' || 
+                  isNaN(midPoint.x) || isNaN(midPoint.y)) {
+                console.warn(`Invalid coordinates for ${symbol} timeline point ${i}:`, midPoint);
+                continue;
+              }
+              
               const midX = xScale.getPixelForValue(midPoint.x);
-              const midY = xScale.getPixelForValue(midPoint.y);
+              const midY = yScale.getPixelForValue(midPoint.y);
+              
+              // 픽셀 좌표 유효성 검사
+              if (isNaN(midX) || isNaN(midY)) {
+                console.warn(`Invalid pixel coordinates for ${symbol} timeline point ${i}:`, {midX, midY});
+                continue;
+              }
               
               // 급격한 변화 감지 (이전/다음 포인트와의 거리)
               let isSharpChange = false;
@@ -5099,16 +5127,29 @@ function renderRRGChart() {
           // 끝점을 큰 원으로 강조 표시
           if (timeline.length > 0) {
             const lastPoint = timeline[timeline.length - 1];
-            const lastX = xScale.getPixelForValue(lastPoint.x);
-            const lastY = xScale.getPixelForValue(lastPoint.y);
             
-            ctx.fillStyle = color;
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(lastX, lastY, 6, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.stroke();
+            // 좌표 유효성 검사
+            if (typeof lastPoint.x === 'number' && typeof lastPoint.y === 'number' && 
+                !isNaN(lastPoint.x) && !isNaN(lastPoint.y)) {
+              
+              const lastX = xScale.getPixelForValue(lastPoint.x);
+              const lastY = yScale.getPixelForValue(lastPoint.y);
+              
+              // 픽셀 좌표 유효성 검사
+              if (!isNaN(lastX) && !isNaN(lastY)) {
+                ctx.fillStyle = color;
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(lastX, lastY, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+              } else {
+                console.warn(`Invalid pixel coordinates for ${symbol} last point:`, {lastX, lastY});
+              }
+            } else {
+              console.warn(`Invalid coordinates for ${symbol} last point:`, lastPoint);
+            }
           }
           
           // 트레일 배경에 그림자 효과 추가 (가시성 향상)
@@ -5125,10 +5166,25 @@ function renderRRGChart() {
             const prevPoint = timeline[i - 1];
             const currPoint = timeline[i];
             
+            // 좌표 유효성 검사
+            if (typeof prevPoint.x !== 'number' || typeof prevPoint.y !== 'number' || 
+                typeof currPoint.x !== 'number' || typeof currPoint.y !== 'number' ||
+                isNaN(prevPoint.x) || isNaN(prevPoint.y) || 
+                isNaN(currPoint.x) || isNaN(currPoint.y)) {
+              console.warn(`Invalid coordinates for ${symbol} timeline segment ${i}:`, {prevPoint, currPoint});
+              continue;
+            }
+            
             const x1 = xScale.getPixelForValue(prevPoint.x);
             const y1 = yScale.getPixelForValue(prevPoint.y);
             const x2 = xScale.getPixelForValue(currPoint.x);
             const y2 = yScale.getPixelForValue(currPoint.y);
+            
+            // 픽셀 좌표 유효성 검사
+            if (isNaN(x1) || isNaN(y1) || isNaN(x2) || isNaN(y2)) {
+              console.warn(`Invalid pixel coordinates for ${symbol} timeline segment ${i}:`, {x1, y1, x2, y2});
+              continue;
+            }
             
             const angle = Math.atan2(y2 - y1, x2 - x1);
             
