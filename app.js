@@ -4882,8 +4882,8 @@ function renderRRGChart() {
         x: {
           type: 'linear',
           position: 'bottom',
-          min: 95,   // rrg_blog.py 방식: 100 중심, ±5 범위 (경계선 명확화)
-          max: 105,  // RSR은 100을 중심으로 정규화됨
+          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위 (96~104)
+          max: 104,  // RSR은 100을 중심으로 정규화됨
           title: {
             display: true,
             text: 'Relative Strength Ratio (RSR)',
@@ -4905,8 +4905,8 @@ function renderRRGChart() {
         y: {
           type: 'linear',
           position: 'left',
-          min: 95,   // rrg_blog.py 방식: 100 중심, ±5 범위 (경계선 명확화)
-          max: 105,  // RSM도 100을 중심으로 정규화됨
+          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위 (96~104)
+          max: 104,  // RSM도 100을 중심으로 정규화됨
           title: {
             display: true,
             text: 'Relative Strength Momentum (RSM)',
