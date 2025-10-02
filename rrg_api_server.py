@@ -154,8 +154,8 @@ class RRGCalculator:
             if len(rsr) == 0:
                 return None, None, None
             
-            # RSR ROC 계산 (Rate of Change) - 모멘텀
-            rsr_roc = 100 * ((rsr / rsr.shift(1)) - 1)
+            # RSR ROC 계산 (Rate of Change) - rrg_blog.py 방식: 첫 번째 값 대비 변화율
+            rsr_roc = 100 * ((rsr / rsr.iloc[0]) - 1)
             rsr_roc = rsr_roc.dropna()
             
             if len(rsr_roc) == 0:
@@ -307,9 +307,10 @@ class RRGCalculator:
                 rsr = 100 + (rs - rolling_mean) / rolling_std
                 rsr = rsr.dropna()
                 
-                # RSM 계산
-                if len(rsr) > 1:
-                    rsr_roc = 100 * ((rsr / rsr.shift(1)) - 1)
+                # RSM 계산 (rrg_blog.py 방식)
+                if len(rsr) > 0:
+                    # rrg_blog.py 방식: 첫 번째 값 대비 변화율
+                    rsr_roc = 100 * ((rsr / rsr.iloc[0]) - 1)
                     rsr_roc = rsr_roc.dropna()
                     
                     if len(rsr_roc) > 0:
