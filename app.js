@@ -1185,7 +1185,12 @@ async function initializeDashboard() {
   
   // Initialize VIX Index Chart
   setTimeout(() => {
-    console.log('VIX chart initialization removed');
+    console.log('Initializing VIX chart...');
+    if (typeof TradingView !== 'undefined') {
+      initializeVixChart();
+    } else {
+      console.error('TradingView not available for VIX chart');
+    }
   }, 3500);
   
   // Start financial data updates
@@ -1229,6 +1234,10 @@ async function initializeDashboard() {
     }
     
     // Check VIX chart initialization
+    if (typeof TradingView !== 'undefined') {
+      console.log('Re-initializing VIX chart');
+      initializeVixChart();
+    }
     console.log('VIX chart initialization check completed');
   }, 1000);
 }
@@ -2870,6 +2879,63 @@ function initializeFedRateChart() {
 function initializeBdiChart() {
   // TradingEconomics iframe widget - no JavaScript initialization needed
   console.log('TradingEconomics BDI 위젯 로드됨');
+}
+
+function initializeVixChart() {
+  // Initialize TradingView widget for VIX
+  console.log('Initializing VIX chart...');
+  console.log('TradingView available:', typeof TradingView !== 'undefined');
+  
+  if (typeof TradingView !== 'undefined') {
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": "VIX",
+      "interval": "D",
+      "timezone": "Asia/Seoul",
+      "theme": "light",
+      "style": "1",
+      "locale": "en", // 한국어 로케일로 인한 네트워크 오류 방지
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": false,
+      "hide_legend": false,
+      "save_image": false,
+      "container_id": "tradingview_vix",
+      "studies": [
+        "RSI@tv-basicstudies"
+      ],
+      "show_popup_button": false, // 팝업 버튼 비활성화로 네트워크 요청 감소
+      "popup_width": "1000",
+      "popup_height": "650",
+      "no_referral_id": true,
+      "referral_id": "",
+      "hide_volume": false,
+      "withdateranges": true,
+      "range": "3M",
+      "allow_symbol_change": false,
+      "details": true,
+      "hotlist": false,
+      "calendar": false,
+      "news": false,
+      "hide_side_toolbar": false,
+      "studies_overrides": {
+        "volume.volume.color.0": "#00bcd4",
+        "volume.volume.color.1": "#0000ff",
+        "volume.volume.transparency": 70
+      },
+      "onReady": function() {
+        console.log('TradingView VIX 위젯 초기화 완료');
+      },
+      "onError": function(error) {
+        console.log('TradingView VIX 위젯 오류 (무시됨):', error);
+        // 네트워크 오류는 무시하고 계속 진행
+      }
+    });
+    
+    console.log('TradingView VIX 위젯 초기화 완료');
+  } else {
+    console.error('TradingView 라이브러리가 로드되지 않았습니다.');
+  }
 }
 
 function initializeWtiChart() {
