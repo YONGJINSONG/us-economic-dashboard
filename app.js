@@ -4986,11 +4986,11 @@ function renderRRGChart() {
       const xScale = chart.scales.x;
       const yScale = chart.scales.y;
       
-      // Draw center lines at 100, 100 (RRG 중심점)
+      // Draw center lines at 100, 100 (RRG 중심점) - 강조된 경계선
       ctx.save();
-      ctx.strokeStyle = '#666';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]); // Dashed line
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 4]); // 더 굵고 명확한 점선
       
       // Horizontal line at y=100 (가로 중심선)
       ctx.beginPath();
@@ -5167,8 +5167,8 @@ function renderRRGChart() {
         x: {
           type: 'linear',
           position: 'bottom',
-          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위
-          max: 104,  // RSR은 100을 중심으로 정규화됨
+          min: 95,   // rrg_blog.py 방식: 100 중심, ±5 범위 (경계선 명확화)
+          max: 105,  // RSR은 100을 중심으로 정규화됨
           title: {
             display: true,
             text: 'Relative Strength Ratio (RSR)',
@@ -5190,8 +5190,8 @@ function renderRRGChart() {
         y: {
           type: 'linear',
           position: 'left',
-          min: 96,   // rrg_blog.py 방식: 100 중심, ±4 범위
-          max: 104,  // RSM도 100을 중심으로 정규화됨
+          min: 95,   // rrg_blog.py 방식: 100 중심, ±5 범위 (경계선 명확화)
+          max: 105,  // RSM도 100을 중심으로 정규화됨
           title: {
             display: true,
             text: 'Relative Strength Momentum (RSM)',
