@@ -4591,7 +4591,7 @@ async function initializeRRG() {
   console.log('Initializing RRG...');
   
   try {
-    const data = await loadRRGData(63); // Default period (3 months)
+    const data = await loadRRGData(84); // Default period (12 weeks)
     
     if (data) {
       // 먼저 전역 rrgData 설정 (타임라인 생성에 필요)
@@ -4599,10 +4599,10 @@ async function initializeRRG() {
       console.log('✅ RRG data set globally:', Object.keys(rrgData).length, 'sectors');
       
       // 이제 타임라인 데이터 로드 (rrgData가 설정된 후)
-      const timelineData = await loadRRGTimelineData(63); // Load timeline data for arrows
+      const timelineData = await loadRRGTimelineData(84); // Load timeline data for arrows
       
       // Use timeline data if available, otherwise generate fallback
-      window.rrgTimelineData = timelineData || generateFallbackTimelineData(63);
+      window.rrgTimelineData = timelineData || generateFallbackTimelineData(84);
       
       // 타임라인 데이터 확인
       if (window.rrgTimelineData && Object.keys(window.rrgTimelineData).length > 0) {
@@ -5113,8 +5113,8 @@ async function updateRRG() {
   }
   
   try {
-    // 고정 기간 사용 (3개월 = 63일)
-    const selectedPeriod = '63';
+    // 고정 기간 사용 (12주 = 84일)
+    const selectedPeriod = '84';
     console.log(`🔄 Updating RRG with fixed period: ${selectedPeriod} days`);
     console.log(`📊 Current rrgData before update:`, rrgData);
     
@@ -5148,7 +5148,7 @@ async function updateRRG() {
     // Fallback: try to load existing data
     console.log('Falling back to existing data...');
     try {
-      const data = await loadRRGData(63); // Default period
+      const data = await loadRRGData(84); // Default period
       if (data) {
         rrgData = data;
         renderRRGChart();
