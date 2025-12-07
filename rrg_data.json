@@ -1,13 +1,13 @@
 {
     "XLB": {
         "name": "Materials",
-        "x": 96.3983,
-        "y": 97.8621,
-        "rsr": 96.3983,
-        "rsm": 97.8621,
+        "x": 98.5757,
+        "y": 98.5919,
+        "rsr": 98.5757,
+        "rsm": 98.5919,
         "relative_strength": 0.6417,
         "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLC": {
@@ -18,18 +18,18 @@
         "rsm": 102.5837,
         "relative_strength": 1.7048,
         "quadrant": "Leading (선도)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLE": {
         "name": "Energy",
-        "x": 96.4155,
-        "y": 98.5302,
-        "rsr": 96.4155,
-        "rsm": 98.5302,
+        "x": 99.8661,
+        "y": 100.8261,
+        "rsr": 99.8661,
+        "rsm": 100.8261,
         "relative_strength": 0.6684,
-        "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "quadrant": "Improving (개선)",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLF": {
@@ -40,7 +40,7 @@
         "rsm": 102.1439,
         "relative_strength": 0.7813,
         "quadrant": "Leading (선도)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLI": {
@@ -51,18 +51,18 @@
         "rsm": 101.473,
         "relative_strength": 2.2499,
         "quadrant": "Improving (개선)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLK": {
         "name": "Technology",
-        "x": 96.4031,
-        "y": 98.8748,
-        "rsr": 96.4031,
-        "rsm": 98.8748,
+        "x": 101.5751,
+        "y": 102.9554,
+        "rsr": 101.5751,
+        "rsm": 102.9554,
         "relative_strength": 2.1338,
-        "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "quadrant": "Leading (선도)",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLP": {
@@ -73,18 +73,18 @@
         "rsm": 99.288,
         "relative_strength": 1.142,
         "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLU": {
         "name": "Utilities",
-        "x": 96.4256,
-        "y": 99.1706,
-        "rsr": 96.4256,
-        "rsm": 99.1706,
+        "x": 98.0818,
+        "y": 99.9323,
+        "rsr": 98.0818,
+        "rsm": 99.9323,
         "relative_strength": 0.6302,
         "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLV": {
@@ -95,18 +95,18 @@
         "rsm": 99.2274,
         "relative_strength": 2.2307,
         "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLY": {
         "name": "Consumer Discretionary",
-        "x": 96.4053,
-        "y": 98.8525,
-        "rsr": 96.4053,
-        "rsm": 98.8525,
+        "x": 101.2919,
+        "y": 102.1135,
+        "rsr": 101.2919,
+        "rsm": 102.1135,
         "relative_strength": 1.7427,
-        "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "quadrant": "Leading (선도)",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     },
     "XLRE": {
@@ -117,7 +117,7 @@
         "rsm": 99.9157,
         "relative_strength": 0.5966,
         "quadrant": "Lagging (지연)",
-        "date": "2025-12-06",
+        "date": "2025-12-07",
         "calculation_method": "rrg_blog.py"
     }
 }
