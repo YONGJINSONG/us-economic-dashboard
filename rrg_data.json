@@ -7,7 +7,7 @@
         "rsm": 100.2213,
         "relative_strength": 0.6907,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLC": {
@@ -18,7 +18,7 @@
         "rsm": 99.8825,
         "relative_strength": 1.4592,
         "quadrant": "Lagging (지연)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLE": {
@@ -29,7 +29,7 @@
         "rsm": 99.4378,
         "relative_strength": 0.7169,
         "quadrant": "Lagging (지연)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLF": {
@@ -40,7 +40,7 @@
         "rsm": 100.9059,
         "relative_strength": 0.7142,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLI": {
@@ -51,7 +51,7 @@
         "rsm": 101.2704,
         "relative_strength": 2.4119,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLK": {
@@ -62,7 +62,7 @@
         "rsm": 101.3098,
         "relative_strength": 2.5523,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLP": {
@@ -73,7 +73,7 @@
         "rsm": 100.6452,
         "relative_strength": 1.1106,
         "quadrant": "Improving (개선)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLU": {
@@ -84,7 +84,7 @@
         "rsm": 101.529,
         "relative_strength": 0.5968,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLV": {
@@ -95,7 +95,7 @@
         "rsm": 100.2107,
         "relative_strength": 1.9918,
         "quadrant": "Improving (개선)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLY": {
@@ -106,7 +106,7 @@
         "rsm": 102.0669,
         "relative_strength": 1.562,
         "quadrant": "Leading (선도)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     },
     "XLRE": {
@@ -117,7 +117,7 @@
         "rsm": 100.3867,
         "relative_strength": 0.5848,
         "quadrant": "Improving (개선)",
-        "date": "2026-06-21",
+        "date": "2026-06-22",
         "calculation_method": "rrg_blog.py"
     }
 }
