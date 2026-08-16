@@ -7,18 +7,18 @@
         "rsm": 100.3289,
         "relative_strength": 0.6748,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLC": {
         "name": "Communication Services",
-        "x": 100.1347,
-        "y": 101.8654,
-        "rsr": 100.1347,
-        "rsm": 101.8654,
+        "x": 100.0969,
+        "y": 101.8497,
+        "rsr": 100.0969,
+        "rsm": 101.8497,
         "relative_strength": 1.4507,
         "quadrant": "Leading (선도)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLE": {
@@ -29,7 +29,7 @@
         "rsm": 102.0222,
         "relative_strength": 0.7952,
         "quadrant": "Leading (선도)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLF": {
@@ -40,7 +40,7 @@
         "rsm": 100.605,
         "relative_strength": 0.747,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLI": {
@@ -51,7 +51,7 @@
         "rsm": 100.9367,
         "relative_strength": 2.3955,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLK": {
@@ -62,7 +62,7 @@
         "rsm": 101.6442,
         "relative_strength": 2.4405,
         "quadrant": "Leading (선도)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLP": {
@@ -73,7 +73,7 @@
         "rsm": 100.9439,
         "relative_strength": 1.1057,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLU": {
@@ -84,7 +84,7 @@
         "rsm": 101.7866,
         "relative_strength": 0.5691,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLV": {
@@ -95,7 +95,7 @@
         "rsm": 100.647,
         "relative_strength": 2.1497,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLY": {
@@ -106,18 +106,18 @@
         "rsm": 99.1917,
         "relative_strength": 1.5182,
         "quadrant": "Lagging (지연)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     },
     "XLRE": {
         "name": "Real Estate",
-        "x": 99.5071,
-        "y": 101.2306,
-        "rsr": 99.5071,
-        "rsm": 101.2306,
+        "x": 99.4116,
+        "y": 100.9819,
+        "rsr": 99.4116,
+        "rsm": 100.9819,
         "relative_strength": 0.5814,
         "quadrant": "Improving (개선)",
-        "date": "2026-08-15",
+        "date": "2026-08-16",
         "calculation_method": "rrg_blog.py"
     }
 }
